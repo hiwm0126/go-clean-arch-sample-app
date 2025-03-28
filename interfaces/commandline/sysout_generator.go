@@ -14,8 +14,8 @@ func NewSysOutGenerator() *SysOutGenerator {
 	return &SysOutGenerator{}
 }
 
-// GenerateSysOut レスポンスのtypeに応じて、標準出力を生成する
-func (g *SysOutGenerator) GenerateSysOut(res interface{}) {
+// Generate レスポンスのtypeに応じて、標準出力を生成する
+func (g *SysOutGenerator) Generate(res interface{}) {
 	switch v := res.(type) {
 	case *usecase.OrderUseCaseRes:
 		if v.IsError {

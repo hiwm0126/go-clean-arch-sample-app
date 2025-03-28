@@ -37,31 +37,31 @@ func (r *router) Routing(args [][]string) error {
 			if err != nil {
 				return err
 			}
-			r.sysOutGenerator.GenerateSysOut(res)
+			r.sysOutGenerator.Generate(res)
 		case *usecase.CancelUseCaseReq:
 			res, err := r.controller.Cancel(param)
 			if err != nil {
 				return err
 			}
-			r.sysOutGenerator.GenerateSysOut(res)
+			r.sysOutGenerator.Generate(res)
 		case *usecase.ShippingUseCaseReq:
 			res, err := r.controller.Ship(param)
 			if err != nil {
 				return err
 			}
-			r.sysOutGenerator.GenerateSysOut(res)
+			r.sysOutGenerator.Generate(res)
 		case *usecase.ChangeUseCaseReq:
 			res, err := r.controller.Change(param)
 			if err != nil {
 				return err
 			}
-			r.sysOutGenerator.GenerateSysOut(res)
+			r.sysOutGenerator.Generate(res)
 		case *usecase.ExpandUseCaseReq:
 			res, err := r.controller.Expand(param)
 			if err != nil {
 				return err
 			}
-			r.sysOutGenerator.GenerateSysOut(res)
+			r.sysOutGenerator.Generate(res)
 		}
 	}
 	return nil
