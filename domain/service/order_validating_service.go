@@ -44,15 +44,16 @@ func (s *orderValidatingService) Execute(order *model.Order, itemsInfos map[stri
 	}
 
 	// 出荷可能数取得
-	sl, err := s.shipmentLimitRepo.GetShipmentLimitByDate(order.ShipmentDueDate)
+	shipmentLimit, err := s.shipmentLimitRepo.GetShipmentLimitByDate(order.ShipmentDueDate)
 	if err != nil {
 		return err
 	}
+	// ShipmentDueDateが含まれる期間で有効な、追加出荷可能数を取得
 	asl, err := s.additionalShipmentLimitRepo.GetByShipmentDueDate(order.ShipmentDueDate)
 	if err != nil {
 		return err
 	}
-	sl.AdditionalShipmentLimits = asl
+	shipmentLimit.AdditionalShipmentLimits = asl
 
 	//出荷可能数チェック
 	for productNumber, additionalQuantity := range itemsInfos {
@@ -62,7 +63,8 @@ func (s *orderValidatingService) Execute(order *model.Order, itemsInfos map[stri
 			return err
 		}
 
-		if !sl.CanShipping(currentPlannedShippingQuantity, additionalQuantity, order.ShipmentDueDate) {
+		// 出荷可能数チェック
+		if !shipmentLimit.CanShipping(currentPlannedShippingQuantity, additionalQuantity, order.ShipmentDueDate) {
 			return errors.New("出荷可能数を超えています")
 		}
 	}
