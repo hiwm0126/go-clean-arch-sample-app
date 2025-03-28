@@ -1,6 +1,6 @@
 package repository
 
-import "github.com/hiwm0126/internship_27_test/domain/model"
+import "example.com/internship_27_test/domain/model"
 
 type OrderRepository interface {
 	Save(order *model.Order) error

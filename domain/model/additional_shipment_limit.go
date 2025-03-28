@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/hiwm0126/internship_27_test/constants"
+	"example.com/internship_27_test/constants"
 	"time"
 )
 

@@ -2,8 +2,8 @@ package service
 
 import (
 	"errors"
-	"github.com/hiwm0126/internship_27_test/domain/model"
-	"github.com/hiwm0126/internship_27_test/domain/repository"
+	"example.com/internship_27_test/domain/model"
+	"example.com/internship_27_test/domain/repository"
 	"time"
 )
 

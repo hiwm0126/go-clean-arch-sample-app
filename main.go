@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hiwm0126/internship_27_test/interfaces/commandline"
+	"example.com/internship_27_test/interfaces/commandline"
 )
 
 func main() {

@@ -1,6 +1,6 @@
 package commandline
 
-import "github.com/hiwm0126/internship_27_test/usecase"
+import "example.com/internship_27_test/usecase"
 
 type Router interface {
 	Routing(args [][]string) error

@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"errors"
-	"github.com/hiwm0126/internship_27_test/domain/repository"
-	"github.com/hiwm0126/internship_27_test/domain/service"
+	"example.com/internship_27_test/domain/repository"
+	"example.com/internship_27_test/domain/service"
 	"time"
 )
 

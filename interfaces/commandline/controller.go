@@ -1,9 +1,9 @@
 package commandline
 
 import (
-	"github.com/hiwm0126/internship_27_test/domain/service"
-	"github.com/hiwm0126/internship_27_test/infrastructure/datastore"
-	"github.com/hiwm0126/internship_27_test/usecase"
+	"example.com/internship_27_test/domain/service"
+	"example.com/internship_27_test/infrastructure/datastore"
+	"example.com/internship_27_test/usecase"
 )
 
 type Controller struct {

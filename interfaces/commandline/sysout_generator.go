@@ -1,9 +1,9 @@
 package commandline
 
 import (
+	"example.com/internship_27_test/constants"
+	"example.com/internship_27_test/usecase"
 	"fmt"
-	"github.com/hiwm0126/internship_27_test/constants"
-	"github.com/hiwm0126/internship_27_test/usecase"
 	"slices"
 	"strings"
 )

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/hiwm0126/internship_27_test/domain/model"
+	"example.com/internship_27_test/domain/model"
 )
 
 type ShipmentLimitRepository interface {
