@@ -28,14 +28,13 @@ func NewController() *Controller {
 		shippingAcceptablePeriodRepo,
 		additionalShipmentLimitRepo,
 	)
-	orderCreatingService := service.NewOrderCreatingService(
+	orderFactory := service.NewOrderFactory(
 		orderRepo,
 		orderItemRepo,
 		productRepo,
 		shipmentLimitRepo,
 		shippingAcceptablePeriodRepo,
 		additionalShipmentLimitRepo,
-		orderValidationgService,
 	)
 	orderCancelService := service.NewOrderCancelService(orderRepo, orderItemRepo)
 
@@ -46,7 +45,8 @@ func NewController() *Controller {
 			shippingAcceptablePeriodRepo,
 		),
 		orderUseCase: usecase.NewOrderUseCase(
-			orderCreatingService,
+			orderFactory,
+			orderValidationgService,
 		),
 		cancelUseCase: usecase.NewCancelUseCase(
 			orderRepo,
@@ -58,7 +58,7 @@ func NewController() *Controller {
 		changeUseCase: usecase.NewChangeUseCase(
 			orderRepo,
 			orderItemRepo,
-			orderCreatingService,
+			orderFactory,
 			orderCancelService,
 			orderValidationgService,
 		),

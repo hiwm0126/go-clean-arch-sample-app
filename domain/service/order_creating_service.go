@@ -6,50 +6,41 @@ import (
 	"example.com/internship_27_test/domain/repository"
 )
 
-type OrderCreatingService interface {
-	Execute(order *model.Order, itemsInfos map[string]int) error
+type OrderFactory interface {
+	Create(order *model.Order, itemsInfos map[string]int) error
 }
 
-type orderService struct {
+type orderFactory struct {
 	orderRepo                    repository.OrderRepository
 	orderItemRepo                repository.OrderItemRepository
 	productRepo                  repository.ProductRepository
 	shipmentLimitRepo            repository.ShipmentLimitRepository
 	shippingAcceptablePeriodRepo repository.ShippingAcceptablePeriodRepository
 	additionalShipmentLimitRepo  repository.AdditionalShipmentLimitRepository
-	orderValidatingService       OrderValidatingService
 }
 
-func NewOrderCreatingService(
+func NewOrderFactory(
 	orderRepo repository.OrderRepository,
 	orderItemRepo repository.OrderItemRepository,
 	productRepo repository.ProductRepository,
 	shipmentLimitRepo repository.ShipmentLimitRepository,
 	shippingAcceptablePeriodRepo repository.ShippingAcceptablePeriodRepository,
 	additionalShipmentLimitRepo repository.AdditionalShipmentLimitRepository,
-	orderValidatingService OrderValidatingService,
-) OrderCreatingService {
-	return &orderService{
+) OrderFactory {
+	return &orderFactory{
 		orderRepo:                    orderRepo,
 		orderItemRepo:                orderItemRepo,
 		productRepo:                  productRepo,
 		shipmentLimitRepo:            shipmentLimitRepo,
 		shippingAcceptablePeriodRepo: shippingAcceptablePeriodRepo,
 		additionalShipmentLimitRepo:  additionalShipmentLimitRepo,
-		orderValidatingService:       orderValidatingService,
 	}
 }
 
-func (s *orderService) Execute(order *model.Order, itemsInfos map[string]int) error {
+func (s *orderFactory) Create(order *model.Order, itemsInfos map[string]int) error {
 
-	// 出荷可能かチェック
-	err := s.orderValidatingService.Execute(order, itemsInfos)
-	if err != nil {
-		return errors.New("this order is not allowed")
-	}
-
-	// 出荷可能な場合、注文情報を保存
-	err = s.orderRepo.Save(order)
+	// 注文情報を保存
+	err := s.orderRepo.Save(order)
 	if err != nil {
 		return err
 	}

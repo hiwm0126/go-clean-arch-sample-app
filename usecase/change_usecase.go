@@ -27,7 +27,7 @@ type ChangeUseCase interface {
 type changeUseCase struct {
 	orderRepo              repository.OrderRepository
 	orderItemRepo          repository.OrderItemRepository
-	orderCreatingService   service.OrderCreatingService
+	orderFactory           service.OrderFactory
 	orderCancelService     service.OrderCancelService
 	orderValidatingService service.OrderValidatingService
 }
@@ -35,14 +35,14 @@ type changeUseCase struct {
 func NewChangeUseCase(
 	orderRepo repository.OrderRepository,
 	orderItemRepo repository.OrderItemRepository,
-	orderCreatingService service.OrderCreatingService,
+	orderFactory service.OrderFactory,
 	orderCancelService service.OrderCancelService,
 	orderValidatingService service.OrderValidatingService,
 ) ChangeUseCase {
 	return &changeUseCase{
 		orderRepo:              orderRepo,
 		orderItemRepo:          orderItemRepo,
-		orderCreatingService:   orderCreatingService,
+		orderFactory:           orderFactory,
 		orderCancelService:     orderCancelService,
 		orderValidatingService: orderValidatingService,
 	}
@@ -74,7 +74,7 @@ func (c *changeUseCase) Change(req *ChangeUseCaseReq) (*ChangeUseCaseRes, error)
 	}
 
 	// 新しい出荷日への変更が妥当かチェック
-	err = c.orderValidatingService.Execute(newOrder, itemsInfos)
+	err = c.orderValidatingService.Create(newOrder, itemsInfos)
 	if err != nil {
 		return &ChangeUseCaseRes{newOrder.OrderNumber, req.RequestTime, true}, nil
 	}
@@ -86,7 +86,7 @@ func (c *changeUseCase) Change(req *ChangeUseCaseReq) (*ChangeUseCaseRes, error)
 	}
 
 	// 注文を作成
-	err = c.orderCreatingService.Execute(newOrder, itemsInfos)
+	err = c.orderFactory.Create(newOrder, itemsInfos)
 	if err != nil {
 		return &ChangeUseCaseRes{newOrder.OrderNumber, req.RequestTime, true}, nil
 	}

@@ -24,14 +24,17 @@ type OrderUseCase interface {
 }
 
 type orderUseCase struct {
-	orderCreatingService service.OrderCreatingService
+	orderFactory           service.OrderFactory
+	orderValidatingService service.OrderValidatingService
 }
 
 func NewOrderUseCase(
-	orderService service.OrderCreatingService,
+	orderFactory service.OrderFactory,
+	orderValidatingService service.OrderValidatingService,
 ) OrderUseCase {
 	return &orderUseCase{
-		orderCreatingService: orderService,
+		orderFactory:           orderFactory,
+		orderValidatingService: orderValidatingService,
 	}
 }
 
@@ -40,8 +43,14 @@ func (o *orderUseCase) Order(req *OrderUseCaseReq) (*OrderUseCaseRes, error) {
 	// 注文情報モデルを作成
 	order := model.NewOrder(req.OrderNumber, model.OrderStatusOrdered, req.ShipmentDueDate, req.OrderTime)
 
+	// 出荷可能かチェック
+	err := o.orderValidatingService.Create(order, req.ItemsInfos)
+	if err != nil {
+		return &OrderUseCaseRes{req.OrderTime, req.OrderNumber, true}, nil
+	}
+
 	// 注文を作成
-	err := o.orderCreatingService.Execute(order, req.ItemsInfos)
+	err = o.orderFactory.Create(order, req.ItemsInfos)
 	if err != nil {
 		return &OrderUseCaseRes{req.OrderTime, req.OrderNumber, true}, nil
 	}
