@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"context"
 	"example.com/internship_27_test/domain/model"
 	"example.com/internship_27_test/domain/repository"
 )
@@ -23,7 +24,7 @@ func NewProductRepository() repository.ProductRepository {
 }
 
 // SaveProduct 商品マスタ情報を保存する
-func (r *productRepository) Save(product *model.Product) error {
+func (r *productRepository) Save(_ context.Context, product *model.Product) error {
 	data := &Product{
 		ID:            r.index,
 		ProductNumber: product.ProductNumber,
@@ -34,7 +35,7 @@ func (r *productRepository) Save(product *model.Product) error {
 }
 
 // FindByProductNumber 商品マスタ情報を取得する
-func (r *productRepository) FindByProductNumber(productNumber string) (*model.Product, error) {
+func (r *productRepository) FindByProductNumber(_ context.Context, productNumber string) (*model.Product, error) {
 	data, ok := r.productTable[productNumber]
 	if !ok {
 		return nil, nil

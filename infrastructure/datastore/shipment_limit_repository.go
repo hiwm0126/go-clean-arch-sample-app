@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"context"
 	"errors"
 	"example.com/internship_27_test/constants"
 	"example.com/internship_27_test/domain/model"
@@ -32,7 +33,7 @@ func NewShipmentLimitRepository() repository.ShipmentLimitRepository {
 }
 
 // SaveShipmentLimit 出荷可能数マスタ情報を保存する
-func (r *shipmentLimitRepository) Save(shipment *model.ShipmentLimit) error {
+func (r *shipmentLimitRepository) Save(_ context.Context, shipment *model.ShipmentLimit) error {
 	data := &ShipmentLimit{
 		DayOfWeek: int(shipment.DayOfWeek),
 		Quantity:  shipment.Quantity,
@@ -42,7 +43,7 @@ func (r *shipmentLimitRepository) Save(shipment *model.ShipmentLimit) error {
 }
 
 // GetShipmentLimitByDate 指定日の出荷可能数マスタ情報を取得する
-func (r *shipmentLimitRepository) GetShipmentLimitByDate(date string) (*model.ShipmentLimit, error) {
+func (r *shipmentLimitRepository) GetShipmentLimitByDate(_ context.Context, date string) (*model.ShipmentLimit, error) {
 	datetime, err := time.Parse(constants.DateFormat, date)
 	if err != nil {
 		return nil, err

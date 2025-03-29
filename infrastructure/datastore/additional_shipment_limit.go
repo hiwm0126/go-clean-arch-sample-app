@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"context"
 	"example.com/internship_27_test/constants"
 	"example.com/internship_27_test/domain/model"
 	"example.com/internship_27_test/domain/repository"
@@ -31,7 +32,7 @@ func NewAdditionalShipmentLimitRepository() repository.AdditionalShipmentLimitRe
 	}
 }
 
-func (r *additionalShipmentLimitRepository) Save(shipment *model.AdditionalShipmentLimit) error {
+func (r *additionalShipmentLimitRepository) Save(_ context.Context, shipment *model.AdditionalShipmentLimit) error {
 	r.additionalShipmentData = append(r.additionalShipmentData, &AdditionalShipment{
 		Quantity: shipment.Quantity,
 		From:     shipment.From,
@@ -40,7 +41,7 @@ func (r *additionalShipmentLimitRepository) Save(shipment *model.AdditionalShipm
 	return nil
 }
 
-func (r *additionalShipmentLimitRepository) GetByShipmentDueDate(shipmentDueDate string) ([]*model.AdditionalShipmentLimit, error) {
+func (r *additionalShipmentLimitRepository) GetByShipmentDueDate(_ context.Context, shipmentDueDate string) ([]*model.AdditionalShipmentLimit, error) {
 	shipmentDueDateTime, err := time.Parse(constants.DateFormat, shipmentDueDate)
 	if err != nil {
 		return nil, err

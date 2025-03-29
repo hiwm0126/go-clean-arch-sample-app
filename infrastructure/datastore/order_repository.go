@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"context"
 	"example.com/internship_27_test/domain/model"
 	"example.com/internship_27_test/domain/repository"
 	"time"
@@ -35,7 +36,7 @@ func NewOrderRepository() repository.OrderRepository {
 	}
 }
 
-func (r *orderRepository) Save(order *model.Order) error {
+func (r *orderRepository) Save(_ context.Context, order *model.Order) error {
 	r.orderTable[order.OrderNumber] = &Order{
 		ID:              r.index,
 		OrderNumber:     order.OrderNumber,
@@ -47,7 +48,7 @@ func (r *orderRepository) Save(order *model.Order) error {
 	return nil
 }
 
-func (r *orderRepository) Find(id int) (*model.Order, error) {
+func (r *orderRepository) Find(_ context.Context, id int) (*model.Order, error) {
 	for _, v := range r.orderTable {
 		if v.ID == id {
 			return v.ToModel(), nil
@@ -56,7 +57,7 @@ func (r *orderRepository) Find(id int) (*model.Order, error) {
 	return nil, nil
 }
 
-func (r *orderRepository) FindByOrderNumber(orderNumber string) (*model.Order, error) {
+func (r *orderRepository) FindByOrderNumber(_ context.Context, orderNumber string) (*model.Order, error) {
 	v, ok := r.orderTable[orderNumber]
 	if !ok {
 		return nil, nil
@@ -64,7 +65,7 @@ func (r *orderRepository) FindByOrderNumber(orderNumber string) (*model.Order, e
 	return v.ToModel(), nil
 }
 
-func (r *orderRepository) GetOrdersByShipmentDueDate(shipmentDueDate string) ([]*model.Order, error) {
+func (r *orderRepository) GetOrdersByShipmentDueDate(_ context.Context, shipmentDueDate string) ([]*model.Order, error) {
 	orders := []*model.Order{}
 	for _, v := range r.orderTable {
 		if v.ShipmentDueDate == shipmentDueDate {
@@ -74,7 +75,7 @@ func (r *orderRepository) GetOrdersByShipmentDueDate(shipmentDueDate string) ([]
 	return orders, nil
 }
 
-func (r *orderRepository) UpdateStatus(orderNumber string, status model.OrderStatus) error {
+func (r *orderRepository) UpdateStatus(_ context.Context, orderNumber string, status model.OrderStatus) error {
 	v, ok := r.orderTable[orderNumber]
 	if !ok {
 		return nil

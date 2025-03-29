@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"example.com/internship_27_test/domain/model"
 	"example.com/internship_27_test/domain/service"
 	"time"
@@ -20,7 +21,7 @@ type OrderUseCaseRes struct {
 }
 
 type OrderUseCase interface {
-	Order(req *OrderUseCaseReq) (*OrderUseCaseRes, error)
+	Order(ctx context.Context, req *OrderUseCaseReq) (*OrderUseCaseRes, error)
 }
 
 type orderUseCase struct {
@@ -38,19 +39,19 @@ func NewOrderUseCase(
 	}
 }
 
-func (o *orderUseCase) Order(req *OrderUseCaseReq) (*OrderUseCaseRes, error) {
+func (o *orderUseCase) Order(ctx context.Context, req *OrderUseCaseReq) (*OrderUseCaseRes, error) {
 
 	// 注文情報モデルを作成
 	order := model.NewOrder(req.OrderNumber, model.OrderStatusOrdered, req.ShipmentDueDate, req.OrderTime)
 
 	// 出荷可能かチェック
-	err := o.orderValidatingService.Execute(order, req.ItemsInfos)
+	err := o.orderValidatingService.Execute(ctx, order, req.ItemsInfos)
 	if err != nil {
 		return &OrderUseCaseRes{req.OrderTime, req.OrderNumber, true}, nil
 	}
 
 	// 注文を作成
-	err = o.orderFactory.Execute(order, req.ItemsInfos)
+	err = o.orderFactory.Execute(ctx, order, req.ItemsInfos)
 	if err != nil {
 		return &OrderUseCaseRes{req.OrderTime, req.OrderNumber, true}, nil
 	}

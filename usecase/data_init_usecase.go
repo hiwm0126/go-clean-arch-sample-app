@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"example.com/internship_27_test/domain/model"
 	"example.com/internship_27_test/domain/repository"
 )
@@ -15,7 +16,7 @@ type DataInitializationUseCaseReq struct {
 }
 
 type DataInitializationUseCase interface {
-	InitData(req *DataInitializationUseCaseReq) error
+	InitData(ctx context.Context, req *DataInitializationUseCaseReq) error
 }
 
 type dataInitializationUseCase struct {
@@ -37,11 +38,11 @@ func NewImportDataUseCase(
 }
 
 // InitData 初期データをインポートする
-func (u *dataInitializationUseCase) InitData(req *DataInitializationUseCaseReq) error {
+func (u *dataInitializationUseCase) InitData(ctx context.Context, req *DataInitializationUseCaseReq) error {
 	// 商品マスタを作成
 	for _, productNumber := range req.ProductNumberList {
 		product := model.NewProduct(productNumber)
-		err := u.productRepo.Save(product)
+		err := u.productRepo.Save(ctx, product)
 		if err != nil {
 			return err
 		}
@@ -57,7 +58,7 @@ func (u *dataInitializationUseCase) InitData(req *DataInitializationUseCaseReq) 
 		}
 
 		shipmentLimit := model.NewShipmentLimit(dayOfWeek, quantity)
-		err := u.shipmentLimitRepo.Save(shipmentLimit)
+		err := u.shipmentLimitRepo.Save(ctx, shipmentLimit)
 		if err != nil {
 			return err
 		}
@@ -65,7 +66,7 @@ func (u *dataInitializationUseCase) InitData(req *DataInitializationUseCaseReq) 
 
 	// 出荷可能期間マスタを作成
 	shippingAcceptablePeriod := model.NewShippingAcceptablePeriod(req.ShipmentAcceptablePeriod)
-	err := u.shippingAcceptablePeriodRepo.Save(shippingAcceptablePeriod)
+	err := u.shippingAcceptablePeriodRepo.Save(ctx, shippingAcceptablePeriod)
 	if err != nil {
 		return err
 	}

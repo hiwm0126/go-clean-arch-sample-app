@@ -1,8 +1,11 @@
 package repository
 
-import "example.com/internship_27_test/domain/model"
+import (
+	"context"
+	"example.com/internship_27_test/domain/model"
+)
 
 type AdditionalShipmentLimitRepository interface {
-	Save(shipment *model.AdditionalShipmentLimit) error
-	GetByShipmentDueDate(shipmentDueDate string) ([]*model.AdditionalShipmentLimit, error)
+	Save(ctx context.Context, shipment *model.AdditionalShipmentLimit) error
+	GetByShipmentDueDate(ctx context.Context, shipmentDueDate string) ([]*model.AdditionalShipmentLimit, error)
 }

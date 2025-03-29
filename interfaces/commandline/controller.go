@@ -1,6 +1,7 @@
 package commandline
 
 import (
+	"context"
 	"example.com/internship_27_test/domain/service"
 	"example.com/internship_27_test/infrastructure/datastore"
 	"example.com/internship_27_test/usecase"
@@ -69,25 +70,25 @@ func NewController() *Controller {
 }
 
 func (c *Controller) InitData(req *usecase.DataInitializationUseCaseReq) error {
-	return c.initDataUseCase.InitData(req)
+	return c.initDataUseCase.InitData(context.Background(), req)
 }
 
 func (c *Controller) Cancel(req *usecase.CancelUseCaseReq) (*usecase.CancelUseCaseRes, error) {
-	return c.cancelUseCase.Cancel(req)
+	return c.cancelUseCase.Cancel(context.Background(), req)
 }
 
 func (c *Controller) Order(req *usecase.OrderUseCaseReq) (*usecase.OrderUseCaseRes, error) {
-	return c.orderUseCase.Order(req)
+	return c.orderUseCase.Order(context.Background(), req)
 }
 
 func (c *Controller) Ship(req *usecase.ShippingUseCaseReq) (*usecase.ShippingUseCaseRes, error) {
-	return c.shipUseCase.Ship(req)
+	return c.shipUseCase.Ship(context.Background(), req)
 }
 
 func (c *Controller) Change(req *usecase.ChangeUseCaseReq) (*usecase.ChangeUseCaseRes, error) {
-	return c.changeUseCase.Change(req)
+	return c.changeUseCase.Change(context.Background(), req)
 }
 
 func (c *Controller) Expand(req *usecase.ExpandUseCaseReq) (*usecase.ExpandUseCaseRes, error) {
-	return c.expandUseCase.Expand(req)
+	return c.expandUseCase.Expand(context.Background(), req)
 }

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"example.com/internship_27_test/domain/model"
 	"example.com/internship_27_test/domain/repository"
@@ -8,7 +9,7 @@ import (
 )
 
 type OrderCancelService interface {
-	Execute(order *model.Order, cancelTime time.Time) error
+	Execute(ctx context.Context, order *model.Order, cancelTime time.Time) error
 }
 
 type orderCancelService struct {
@@ -26,7 +27,7 @@ func NewOrderCancelService(
 	}
 }
 
-func (o *orderCancelService) Execute(order *model.Order, cancelTime time.Time) error {
+func (o *orderCancelService) Execute(ctx context.Context, order *model.Order, cancelTime time.Time) error {
 
 	// ステータス変更可能な日付かチェック
 	if !order.CanChangeStatusDate(cancelTime) {
@@ -39,13 +40,13 @@ func (o *orderCancelService) Execute(order *model.Order, cancelTime time.Time) e
 	}
 
 	// ステータスをキャンセル済みに変更
-	err := o.orderRepo.UpdateStatus(order.OrderNumber, model.OrderStatusCanceled)
+	err := o.orderRepo.UpdateStatus(ctx, order.OrderNumber, model.OrderStatusCanceled)
 	if err != nil {
 		return err
 	}
 
 	// 注文に紐づく商品を削除
-	err = o.orderItemRepo.DeleteByOrderNumber(order.OrderNumber)
+	err = o.orderItemRepo.DeleteByOrderNumber(ctx, order.OrderNumber)
 	if err != nil {
 		return err
 	}

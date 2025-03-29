@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 	"example.com/internship_27_test/domain/repository"
 	"example.com/internship_27_test/domain/service"
@@ -18,7 +19,7 @@ type CancelUseCaseRes struct {
 }
 
 type CancelUseCase interface {
-	Cancel(req *CancelUseCaseReq) (*CancelUseCaseRes, error)
+	Cancel(ctx context.Context, req *CancelUseCaseReq) (*CancelUseCaseRes, error)
 }
 
 type cancelUseCase struct {
@@ -36,9 +37,9 @@ func NewCancelUseCase(
 	}
 }
 
-func (c *cancelUseCase) Cancel(req *CancelUseCaseReq) (*CancelUseCaseRes, error) {
+func (c *cancelUseCase) Cancel(ctx context.Context, req *CancelUseCaseReq) (*CancelUseCaseRes, error) {
 	// 注文情報を取得
-	order, err := c.orderRepo.FindByOrderNumber(req.OrderNumber)
+	order, err := c.orderRepo.FindByOrderNumber(ctx, req.OrderNumber)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +50,7 @@ func (c *cancelUseCase) Cancel(req *CancelUseCaseReq) (*CancelUseCaseRes, error)
 	}
 
 	// 注文をキャンセル
-	err = c.orderCancelService.Execute(order, req.CancelTime)
+	err = c.orderCancelService.Execute(ctx, order, req.CancelTime)
 	if err != nil {
 		return nil, err
 	}

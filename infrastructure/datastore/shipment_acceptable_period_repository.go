@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"context"
 	"example.com/internship_27_test/domain/model"
 	"example.com/internship_27_test/domain/repository"
 )
@@ -26,7 +27,7 @@ func NewShippingAcceptablePeriodRepository() repository.ShippingAcceptablePeriod
 }
 
 // SaveShippingAcceptablePeriod 出荷可能期間マスタ情報を保存する
-func (r *shippingAcceptablePeriodRepository) Save(p *model.ShippingAcceptablePeriod) error {
+func (r *shippingAcceptablePeriodRepository) Save(_ context.Context, p *model.ShippingAcceptablePeriod) error {
 	r.shippingAcceptablePeriodData = &ShippingAcceptablePeriod{
 		Duration: p.Duration,
 	}
@@ -34,6 +35,6 @@ func (r *shippingAcceptablePeriodRepository) Save(p *model.ShippingAcceptablePer
 }
 
 // GetDuration 出荷可能期間を取得する
-func (r *shippingAcceptablePeriodRepository) Get() (*model.ShippingAcceptablePeriod, error) {
+func (r *shippingAcceptablePeriodRepository) Get(_ context.Context) (*model.ShippingAcceptablePeriod, error) {
 	return r.shippingAcceptablePeriodData.ToModel(), nil
 }

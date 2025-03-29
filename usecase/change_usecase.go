@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"errors"
 	"example.com/internship_27_test/domain/model"
 	"example.com/internship_27_test/domain/repository"
@@ -21,7 +22,7 @@ type ChangeUseCaseRes struct {
 }
 
 type ChangeUseCase interface {
-	Change(req *ChangeUseCaseReq) (*ChangeUseCaseRes, error)
+	Change(ctx context.Context, req *ChangeUseCaseReq) (*ChangeUseCaseRes, error)
 }
 
 type changeUseCase struct {
@@ -48,10 +49,10 @@ func NewChangeUseCase(
 	}
 }
 
-func (c *changeUseCase) Change(req *ChangeUseCaseReq) (*ChangeUseCaseRes, error) {
+func (c *changeUseCase) Change(ctx context.Context, req *ChangeUseCaseReq) (*ChangeUseCaseRes, error) {
 
 	// 対象の注文情報を取得
-	targetOrder, err := c.orderRepo.FindByOrderNumber(req.OrderNumber)
+	targetOrder, err := c.orderRepo.FindByOrderNumber(ctx, req.OrderNumber)
 	if err != nil {
 		return &ChangeUseCaseRes{targetOrder.OrderNumber, req.RequestTime, true}, nil
 	}
@@ -64,7 +65,7 @@ func (c *changeUseCase) Change(req *ChangeUseCaseReq) (*ChangeUseCaseRes, error)
 	// 注文情報モデルを作成
 	newOrder := model.NewOrder(req.OrderNumber, model.OrderStatusOrdered, req.ChangeRequestDate, targetOrder.OrderTime)
 	// 注文商品情報を取得
-	orderProductItems, err := c.orderItemRepo.FindByOrderNumber(targetOrder.OrderNumber)
+	orderProductItems, err := c.orderItemRepo.FindByOrderNumber(ctx, targetOrder.OrderNumber)
 	if err != nil {
 		return &ChangeUseCaseRes{targetOrder.OrderNumber, req.RequestTime, true}, nil
 	}
@@ -74,19 +75,19 @@ func (c *changeUseCase) Change(req *ChangeUseCaseReq) (*ChangeUseCaseRes, error)
 	}
 
 	// 新しい出荷日への変更が妥当かチェック
-	err = c.orderValidatingService.Execute(newOrder, itemsInfos)
+	err = c.orderValidatingService.Execute(ctx, newOrder, itemsInfos)
 	if err != nil {
 		return &ChangeUseCaseRes{newOrder.OrderNumber, req.RequestTime, true}, nil
 	}
 
 	// 元の注文のキャンセル処理
-	err = c.orderCancelService.Execute(targetOrder, req.RequestTime)
+	err = c.orderCancelService.Execute(ctx, targetOrder, req.RequestTime)
 	if err != nil {
 		return &ChangeUseCaseRes{targetOrder.OrderNumber, req.RequestTime, true}, nil
 	}
 
 	// 注文を作成
-	err = c.orderFactory.Execute(newOrder, itemsInfos)
+	err = c.orderFactory.Execute(ctx, newOrder, itemsInfos)
 	if err != nil {
 		return &ChangeUseCaseRes{newOrder.OrderNumber, req.RequestTime, true}, nil
 	}

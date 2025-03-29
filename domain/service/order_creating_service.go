@@ -1,13 +1,14 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"example.com/internship_27_test/domain/model"
 	"example.com/internship_27_test/domain/repository"
 )
 
 type OrderFactory interface {
-	Execute(order *model.Order, itemsInfos map[string]int) error
+	Execute(ctx context.Context, order *model.Order, itemsInfos map[string]int) error
 }
 
 type orderFactory struct {
@@ -37,10 +38,10 @@ func NewOrderFactory(
 	}
 }
 
-func (s *orderFactory) Execute(order *model.Order, itemsInfos map[string]int) error {
+func (s *orderFactory) Execute(ctx context.Context, order *model.Order, itemsInfos map[string]int) error {
 
 	// 注文情報を保存
-	err := s.orderRepo.Save(order)
+	err := s.orderRepo.Save(ctx, order)
 	if err != nil {
 		return err
 	}
@@ -49,7 +50,7 @@ func (s *orderFactory) Execute(order *model.Order, itemsInfos map[string]int) er
 	for productNumber, quantity := range itemsInfos {
 
 		// 商品情報を取得
-		product, err := s.productRepo.FindByProductNumber(productNumber)
+		product, err := s.productRepo.FindByProductNumber(ctx, productNumber)
 		if err != nil {
 			return err
 		}
@@ -62,7 +63,7 @@ func (s *orderFactory) Execute(order *model.Order, itemsInfos map[string]int) er
 		// 商品数の数だけ、注文商品情報を保存
 		for i := 0; i < quantity; i++ {
 			orderItem := model.NewOrderItem(order.OrderNumber, productNumber, order.ShipmentDueDate)
-			err = s.orderItemRepo.Save(orderItem)
+			err = s.orderItemRepo.Save(ctx, orderItem)
 			if err != nil {
 				return err
 			}

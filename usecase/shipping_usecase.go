@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"example.com/internship_27_test/constants"
 	"example.com/internship_27_test/domain/model"
 	"example.com/internship_27_test/domain/repository"
@@ -17,7 +18,7 @@ type ShippingUseCaseRes struct {
 }
 
 type ShippingUseCase interface {
-	Ship(req *ShippingUseCaseReq) (*ShippingUseCaseRes, error)
+	Ship(ctx context.Context, req *ShippingUseCaseReq) (*ShippingUseCaseRes, error)
 }
 
 type shippingUseCase struct {
@@ -30,9 +31,9 @@ func NewShippingUseCase(orderRepo repository.OrderRepository) ShippingUseCase {
 	}
 }
 
-func (s *shippingUseCase) Ship(req *ShippingUseCaseReq) (*ShippingUseCaseRes, error) {
+func (s *shippingUseCase) Ship(ctx context.Context, req *ShippingUseCaseReq) (*ShippingUseCaseRes, error) {
 	// 出荷予定日で、注文を取得
-	orders, err := s.orderRepo.GetOrdersByShipmentDueDate(req.ShipmentRequestTime.Format(constants.DateFormat))
+	orders, err := s.orderRepo.GetOrdersByShipmentDueDate(ctx, req.ShipmentRequestTime.Format(constants.DateFormat))
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +48,7 @@ func (s *shippingUseCase) Ship(req *ShippingUseCaseReq) (*ShippingUseCaseRes, er
 
 	// 配送済みにする
 	for _, targetOrder := range targetOrders {
-		err = s.orderRepo.UpdateStatus(targetOrder.OrderNumber, model.OrderStatusShipped)
+		err = s.orderRepo.UpdateStatus(ctx, targetOrder.OrderNumber, model.OrderStatusShipped)
 		if err != nil {
 			return nil, err
 		}

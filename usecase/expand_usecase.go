@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"example.com/internship_27_test/domain/model"
 	"example.com/internship_27_test/domain/repository"
 	"time"
@@ -18,7 +19,7 @@ type ExpandUseCaseRes struct {
 }
 
 type ExpandUseCase interface {
-	Expand(req *ExpandUseCaseReq) (*ExpandUseCaseRes, error)
+	Expand(ctx context.Context, req *ExpandUseCaseReq) (*ExpandUseCaseRes, error)
 }
 
 type expandUseCase struct {
@@ -33,7 +34,7 @@ func NewExpandUseCase(
 	}
 }
 
-func (e *expandUseCase) Expand(req *ExpandUseCaseReq) (*ExpandUseCaseRes, error) {
+func (e *expandUseCase) Expand(ctx context.Context, req *ExpandUseCaseReq) (*ExpandUseCaseRes, error) {
 	// 追加出荷制限モデルの作成
 	additionalShipmentLimit, err := model.NewAdditionalShipmentLimit(req.Quantity, req.From, req.To)
 	if err != nil {
@@ -41,7 +42,7 @@ func (e *expandUseCase) Expand(req *ExpandUseCaseReq) (*ExpandUseCaseRes, error)
 	}
 
 	// 追加出荷制限の保存
-	err = e.additionalShipmentLimitRepo.Save(additionalShipmentLimit)
+	err = e.additionalShipmentLimitRepo.Save(ctx, additionalShipmentLimit)
 	if err != nil {
 		return nil, err
 	}
