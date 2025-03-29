@@ -44,13 +44,13 @@ func (o *orderUseCase) Order(req *OrderUseCaseReq) (*OrderUseCaseRes, error) {
 	order := model.NewOrder(req.OrderNumber, model.OrderStatusOrdered, req.ShipmentDueDate, req.OrderTime)
 
 	// 出荷可能かチェック
-	err := o.orderValidatingService.Create(order, req.ItemsInfos)
+	err := o.orderValidatingService.Execute(order, req.ItemsInfos)
 	if err != nil {
 		return &OrderUseCaseRes{req.OrderTime, req.OrderNumber, true}, nil
 	}
 
 	// 注文を作成
-	err = o.orderFactory.Create(order, req.ItemsInfos)
+	err = o.orderFactory.Execute(order, req.ItemsInfos)
 	if err != nil {
 		return &OrderUseCaseRes{req.OrderTime, req.OrderNumber, true}, nil
 	}

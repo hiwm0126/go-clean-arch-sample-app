@@ -74,7 +74,7 @@ func (c *changeUseCase) Change(req *ChangeUseCaseReq) (*ChangeUseCaseRes, error)
 	}
 
 	// 新しい出荷日への変更が妥当かチェック
-	err = c.orderValidatingService.Create(newOrder, itemsInfos)
+	err = c.orderValidatingService.Execute(newOrder, itemsInfos)
 	if err != nil {
 		return &ChangeUseCaseRes{newOrder.OrderNumber, req.RequestTime, true}, nil
 	}
@@ -86,7 +86,7 @@ func (c *changeUseCase) Change(req *ChangeUseCaseReq) (*ChangeUseCaseRes, error)
 	}
 
 	// 注文を作成
-	err = c.orderFactory.Create(newOrder, itemsInfos)
+	err = c.orderFactory.Execute(newOrder, itemsInfos)
 	if err != nil {
 		return &ChangeUseCaseRes{newOrder.OrderNumber, req.RequestTime, true}, nil
 	}

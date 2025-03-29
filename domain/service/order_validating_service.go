@@ -7,7 +7,7 @@ import (
 )
 
 type OrderValidatingService interface {
-	Create(order *model.Order, itemsInfos map[string]int) error
+	Execute(order *model.Order, itemsInfos map[string]int) error
 }
 
 type orderValidatingService struct {
@@ -31,7 +31,7 @@ func NewOrderValidatingService(
 	}
 }
 
-func (s *orderValidatingService) Create(order *model.Order, itemsInfos map[string]int) error {
+func (s *orderValidatingService) Execute(order *model.Order, itemsInfos map[string]int) error {
 	// 出荷可能期間を取得
 	sap, err := s.shippingAcceptablePeriodRepo.Get()
 	if err != nil {

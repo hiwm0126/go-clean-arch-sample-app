@@ -7,7 +7,7 @@ import (
 )
 
 type OrderFactory interface {
-	Create(order *model.Order, itemsInfos map[string]int) error
+	Execute(order *model.Order, itemsInfos map[string]int) error
 }
 
 type orderFactory struct {
@@ -37,7 +37,7 @@ func NewOrderFactory(
 	}
 }
 
-func (s *orderFactory) Create(order *model.Order, itemsInfos map[string]int) error {
+func (s *orderFactory) Execute(order *model.Order, itemsInfos map[string]int) error {
 
 	// 注文情報を保存
 	err := s.orderRepo.Save(order)
