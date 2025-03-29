@@ -56,7 +56,7 @@ func (s *ShipmentLimit) GetShipmentLimitQuantityByDate(shippingDueDate string) i
 
 // isWithinRange 出荷予定日が追加制限の期間内かを判定する
 func isWithinRange(limit *AdditionalShipmentLimit, date time.Time) bool {
-    return (limit.From.Before(date) && limit.To.After(date)) ||
-        limit.From.Equal(date) ||
-        limit.To.Equal(date)
+    return (limit.From.Before(date) && limit.To.After(date)) || // // From,Toの期間内
+        limit.From.Equal(date) || // Fromが一致
+        limit.To.Equal(date) // Toが一致
 }
