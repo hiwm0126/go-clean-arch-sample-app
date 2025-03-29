@@ -1,6 +1,6 @@
 # go-clean-arch-sample-app
 
-The App is a sample application implemented in Golang using Domain-Driven Design (DDD) and Clean Architecture principles.
+This App is a sample application implemented in Golang using Domain-Driven Design (DDD) and Clean Architecture principles.
 
 ## Layered Architecture Overview
 
