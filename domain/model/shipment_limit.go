@@ -35,19 +35,28 @@ func NewShipmentLimit(dayOfWeek DayOfWeek, quantity int) *ShipmentLimit {
 // shippingDueDate: 出荷予定日
 // 出荷予定日が出荷制限数の追加期間内であれば、出荷制限の数量を加算する
 func (s *ShipmentLimit) GetShipmentLimitQuantityByDate(shippingDueDate string) int {
-	limitQuantity := s.Quantity
-	shippingDueDateTime, err := time.Parse(constants.DateFormat, shippingDueDate)
-	if err != nil {
-		return 0
-	}
+    // 初期の出荷制限数を設定
+    limitQuantity := s.Quantity
 
-	for _, additionalShipmentLimit := range s.AdditionalShipmentLimits {
-		if additionalShipmentLimit.From.Before(shippingDueDateTime) && additionalShipmentLimit.To.After(shippingDueDateTime) ||
-			additionalShipmentLimit.From.Equal(shippingDueDateTime) ||
-			additionalShipmentLimit.To.Equal(shippingDueDateTime) {
-			limitQuantity += additionalShipmentLimit.Quantity
-		}
-	}
-	
-	return limitQuantity
+    // 出荷予定日をパース
+    shippingDueDateTime, err := time.Parse(constants.DateFormat, shippingDueDate)
+    if err != nil {
+        return 0
+    }
+
+    // 出荷制限数を追加する条件を判定
+    for _, additionalLimit := range s.AdditionalShipmentLimits {
+        if isWithinRange(additionalLimit, shippingDueDateTime) {
+            limitQuantity += additionalLimit.Quantity
+        }
+    }
+
+    return limitQuantity
+}
+
+// isWithinRange 出荷予定日が追加制限の期間内かを判定する
+func isWithinRange(limit *AdditionalShipmentLimit, date time.Time) bool {
+    return (limit.From.Before(date) && limit.To.After(date)) ||
+        limit.From.Equal(date) ||
+        limit.To.Equal(date)
 }
