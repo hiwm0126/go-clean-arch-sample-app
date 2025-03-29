@@ -17,6 +17,9 @@ func NewShippingAcceptablePeriod(duration int) *ShippingAcceptablePeriod {
 
 // Durationに指定された日数後までの範囲に収まっているかどうか
 func (s *ShippingAcceptablePeriod) IsAcceptableDate(orderTime time.Time, shipmentDueDateStr string) bool {
-	shipmentDueDate, _ := time.Parse(constants.DateFormat, shipmentDueDateStr)
+	shipmentDueDate, err := time.Parse(constants.DateFormat, shipmentDueDateStr)
+	if err != nil {
+		return false
+	}
 	return shipmentDueDate.AddDate(0, 0, s.Duration).After(orderTime)
 }

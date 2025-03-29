@@ -11,12 +11,18 @@ type AdditionalShipmentLimit struct {
 	To       time.Time
 }
 
-func NewAdditionalShipmentLimit(quantity int, from string, to string) *AdditionalShipmentLimit {
-	fromTime, _ := time.Parse(constants.DateFormat, from)
-	toTime, _ := time.Parse(constants.DateFormat, to)
+func NewAdditionalShipmentLimit(quantity int, from string, to string) (*AdditionalShipmentLimit, error) {
+	fromTime, err := time.Parse(constants.DateFormat, from)
+	if err != nil {
+		return nil, err
+	}
+	toTime, err := time.Parse(constants.DateFormat, to)
+	if err != nil {
+		return nil, err
+	}
 	return &AdditionalShipmentLimit{
 		Quantity: quantity,
 		From:     fromTime,
 		To:       toTime,
-	}
+	}, nil
 }

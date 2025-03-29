@@ -34,8 +34,14 @@ func NewExpandUseCase(
 }
 
 func (e *expandUseCase) Expand(req *ExpandUseCaseReq) (*ExpandUseCaseRes, error) {
-	additionalShipmentLimit := model.NewAdditionalShipmentLimit(req.Quantity, req.From, req.To)
-	err := e.additionalShipmentLimitRepo.Save(additionalShipmentLimit)
+	// 追加出荷制限モデルの作成
+	additionalShipmentLimit, err := model.NewAdditionalShipmentLimit(req.Quantity, req.From, req.To)
+	if err != nil {
+		return nil, err
+	}
+
+	// 追加出荷制限の保存
+	err = e.additionalShipmentLimitRepo.Save(additionalShipmentLimit)
 	if err != nil {
 		return nil, err
 	}

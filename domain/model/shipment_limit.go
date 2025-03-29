@@ -37,7 +37,11 @@ func NewShipmentLimit(dayOfWeek DayOfWeek, quantity int) *ShipmentLimit {
 // 出荷予定日が出荷制限数の追加期間内であれば、出荷制限の数量を加算する
 func (s *ShipmentLimit) CanShipping(currentPlannedShippingQuantity int, additionalQuantity int, shippingDueDate string) bool {
 	limitQuantity := s.Quantity
-	shippingDueDateTime, _ := time.Parse(constants.DateFormat, shippingDueDate)
+	shippingDueDateTime, err := time.Parse(constants.DateFormat, shippingDueDate)
+	if err != nil {
+		return false
+	}
+
 	for _, additionalShipmentLimit := range s.AdditionalShipmentLimits {
 		if additionalShipmentLimit.From.Before(shippingDueDateTime) && additionalShipmentLimit.To.After(shippingDueDateTime) ||
 			additionalShipmentLimit.From.Equal(shippingDueDateTime) ||

@@ -32,7 +32,10 @@ func (o *Order) CanChangeStatus() bool {
 
 // CanChangeStatusDate ステータスが変更可能な日付かどうかを返す
 func (o *Order) CanChangeStatusDate(datetime time.Time) bool {
-	shipmentDueDate, _ := time.Parse(constants.DateFormat, o.ShipmentDueDate)
+	shipmentDueDate, err := time.Parse(constants.DateFormat, o.ShipmentDueDate)
+	if err != nil {
+		return false
+	}
 	return shipmentDueDate.After(datetime)
 }
 
