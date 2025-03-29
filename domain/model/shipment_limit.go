@@ -1,7 +1,7 @@
 package model
 
 import (
-	"example.com/internship_27_test/constants"
+	"theapp/constants"
 	"time"
 )
 

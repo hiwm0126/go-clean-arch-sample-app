@@ -2,8 +2,8 @@ package datastore
 
 import (
 	"context"
-	"example.com/internship_27_test/domain/model"
-	"example.com/internship_27_test/domain/repository"
+	"theapp/domain/model"
+	"theapp/domain/repository"
 )
 
 type ShippingAcceptablePeriod struct {

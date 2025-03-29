@@ -2,12 +2,12 @@ package commandline
 
 import (
 	"errors"
-	"example.com/internship_27_test/constants"
-	"example.com/internship_27_test/domain/model"
 	"strconv"
+	"theapp/constants"
+	"theapp/domain/model"
 	"time"
 
-	"example.com/internship_27_test/usecase"
+	"theapp/usecase"
 )
 
 type Parser interface {

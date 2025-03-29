@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
-	"example.com/internship_27_test/domain/model"
-	"example.com/internship_27_test/domain/service"
+	"theapp/domain/model"
+	"theapp/domain/service"
 	"time"
 )
 

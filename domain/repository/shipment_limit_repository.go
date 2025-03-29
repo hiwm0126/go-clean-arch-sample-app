@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"example.com/internship_27_test/domain/model"
+	"theapp/domain/model"
 )
 
 type ShipmentLimitRepository interface {

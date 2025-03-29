@@ -2,9 +2,9 @@ package commandline
 
 import (
 	"context"
-	"example.com/internship_27_test/domain/service"
-	"example.com/internship_27_test/infrastructure/datastore"
-	"example.com/internship_27_test/usecase"
+	"theapp/domain/service"
+	"theapp/infrastructure/datastore"
+	"theapp/usecase"
 )
 
 type Controller struct {

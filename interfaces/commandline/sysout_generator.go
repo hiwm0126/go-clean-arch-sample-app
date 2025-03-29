@@ -1,11 +1,11 @@
 package commandline
 
 import (
-	"example.com/internship_27_test/constants"
-	"example.com/internship_27_test/usecase"
 	"fmt"
 	"slices"
 	"strings"
+	"theapp/constants"
+	"theapp/usecase"
 )
 
 type SysOutGenerator struct{}
@@ -29,7 +29,7 @@ func (g *SysOutGenerator) Generate(res interface{}) {
 		g.generateShippingUseCaseSysOut(v)
 	case *usecase.ChangeUseCaseRes:
 		if v.IsError {
-			fmt.Printf("%s Ordered %s Error: the number of available shipments has been exceeded.\n", v.RequestTime.Format(constants.DateTimeFormat), v.OrderNumber)
+			fmt.Printf("%s Changed %s Error: the number of available shipments has been exceeded.\n", v.RequestTime.Format(constants.DateTimeFormat), v.OrderNumber)
 			return
 		}
 		fmt.Printf("%s Changed %s\n", v.RequestTime.Format(constants.DateTimeFormat), v.OrderNumber)

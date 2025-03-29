@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 	"errors"
-	"example.com/internship_27_test/domain/repository"
-	"example.com/internship_27_test/domain/service"
+	"theapp/domain/repository"
+	"theapp/domain/service"
 	"time"
 )
 
