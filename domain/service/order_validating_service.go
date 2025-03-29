@@ -56,7 +56,7 @@ func (s *orderValidatingService) Execute(ctx context.Context, order *model.Order
 	}
 	shipmentLimit.AdditionalShipmentLimits = asl
 
-	//出荷可能数チェック
+	//出荷制限数チェック
 	for productNumber, additionalQuantity := range itemsInfos {
 		//現在の出荷予定数取得
 		currentPlannedShippingQuantity, err := s.orderItemRepo.GetCurrentPlannedShippingQuantity(ctx, order.ShipmentDueDate, productNumber)
@@ -64,9 +64,11 @@ func (s *orderValidatingService) Execute(ctx context.Context, order *model.Order
 			return err
 		}
 
-		// 出荷可能数チェック
-		if !shipmentLimit.CanShipping(currentPlannedShippingQuantity, additionalQuantity, order.ShipmentDueDate) {
-			return errors.New("出荷可能数を超えています")
+		// 指定された日付の出荷制限数を取得
+		limitQuantity := shipmentLimit.GetShipmentLimitQuantityByDate(order.ShipmentDueDate)
+		// (指定された日付の出荷可能数 - 現在の出荷予定数) < 今回の注文で追加される出荷数
+		if (limitQuantity - currentPlannedShippingQuantity) < additionalQuantity {
+			return errors.New("available quantity is not enough")
 		}
 	}
 
