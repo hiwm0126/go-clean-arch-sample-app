@@ -51,7 +51,7 @@ func (ap *argsParser) Parse(rawArgs [][]string) ([]interface{}, error) {
 
 		// クエリネームが含まれているかどうか
 		// 含まれている場合、それまでのクエリの引数をリクエストパラメータに変換
-		if existsQueryName(arg[0]) {
+		if ap.existsQueryName(arg[0]) {
 			if err := ap.appendParam(&reqParamList, queryName, queryArgs); err != nil {
 				return nil, err
 			}
@@ -70,7 +70,7 @@ func (ap *argsParser) Parse(rawArgs [][]string) ([]interface{}, error) {
 	return reqParamList, nil
 }
 
-func existsQueryName(arg string) bool {
+func (ap *argsParser) existsQueryName(arg string) bool {
 	_, exists := validQueries[arg]
 	return exists
 }
@@ -119,7 +119,7 @@ func (ap *argsParser) createOrderParam(args [][]string) (*usecase.OrderUseCaseRe
 		OrderTime:       ap.parseStringToTime(firstLine[orderTimeIndexFirstLine]),
 		OrderNumber:     secondLine[orderNumberIndexSecondLine],
 		ShipmentDueDate: secondLine[shipmentDueDateIndexSecondLine],
-		ItemsInfos:      itemInfos,
+		ItemInfos:       itemInfos,
 	}, nil
 }
 
@@ -144,9 +144,10 @@ func (ap *argsParser) createCancelParam(args [][]string) (*usecase.CancelUseCase
 func (ap *argsParser) createShipParam(args [][]string) (*usecase.ShippingUseCaseReq, error) {
 	var (
 		shipmentRequestTimeIndexFirstLine = 1
+		maxNumberOfParamLines             = 1
 	)
 
-	if len(args) != 1 {
+	if len(args) != maxNumberOfParamLines {
 		return nil, errors.New("invalid number of arguments")
 	}
 
@@ -160,9 +161,10 @@ func (ap *argsParser) createChangeParam(args [][]string) (*usecase.ChangeUseCase
 		requestTimeIndexFirstLine        = 1
 		orderNumberIndexSecondLine       = 0
 		changeRequestDateIndexSecondLine = 1
+		maxNumberOfParamLines            = 2
 	)
 
-	if len(args) != 2 {
+	if len(args) != maxNumberOfParamLines {
 		return nil, errors.New("invalid number of arguments")
 	}
 
@@ -182,9 +184,10 @@ func (ap *argsParser) createExpandParam(args [][]string) (*usecase.ExpandUseCase
 		FromIndexSecondLine             = 0
 		toIndexSecondLine               = 1
 		quantityIndexSecondLine         = 2
+		maxNumberOfParamLines           = 2
 	)
 
-	if len(args) != 2 {
+	if len(args) != maxNumberOfParamLines {
 		return nil, errors.New("invalid number of arguments")
 	}
 
@@ -205,9 +208,10 @@ func (ap *argsParser) createInitDataParam(args [][]string) (*usecase.DataInitial
 		shipmentLimitThresholdIndexFirstLine   = 1
 		shipmentAcceptablePeriodIndexFirstLine = 2
 		numOfQueryIndexForthLine               = 0
+		maxNumberOfParamLines                  = 4
 	)
 
-	if len(args) != 4 {
+	if len(args) != maxNumberOfParamLines {
 		return nil, errors.New("invalid number of arguments")
 	}
 

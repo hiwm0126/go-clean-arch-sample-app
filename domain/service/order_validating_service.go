@@ -32,7 +32,7 @@ func NewOrderValidatingService(
 	}
 }
 
-func (s *orderValidatingService) Execute(ctx context.Context, order *model.Order, itemsInfos map[string]int) error {
+func (s *orderValidatingService) Execute(ctx context.Context, order *model.Order, itemInfos map[string]int) error {
 	// 出荷可能期間を取得
 	sap, err := s.shippingAcceptablePeriodRepo.Get(ctx)
 	if err != nil {
@@ -57,8 +57,8 @@ func (s *orderValidatingService) Execute(ctx context.Context, order *model.Order
 	shipmentLimit.AdditionalShipmentLimits = asl
 
 	//出荷制限数チェック
-	for productNumber, additionalQuantity := range itemsInfos {
-		//現在の出荷予定数取得
+	for productNumber, additionalQuantity := range itemInfos {
+		//現在の出荷予定数を商品番号(productNumber)に基づいて取得
 		currentPlannedShippingQuantity, err := s.orderItemRepo.GetCurrentPlannedShippingQuantity(ctx, order.ShipmentDueDate, productNumber)
 		if err != nil {
 			return err

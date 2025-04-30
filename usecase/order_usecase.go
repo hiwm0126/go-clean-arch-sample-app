@@ -11,7 +11,7 @@ type OrderUseCaseReq struct {
 	OrderNumber     string
 	OrderTime       time.Time
 	ShipmentDueDate string
-	ItemsInfos      map[string]int
+	ItemInfos       map[string]int
 }
 
 type OrderUseCaseRes struct {
@@ -45,13 +45,13 @@ func (o *orderUseCase) Order(ctx context.Context, req *OrderUseCaseReq) (*OrderU
 	order := model.NewOrder(req.OrderNumber, model.OrderStatusOrdered, req.ShipmentDueDate, req.OrderTime)
 
 	// 出荷可能かチェック
-	err := o.orderValidatingService.Execute(ctx, order, req.ItemsInfos)
+	err := o.orderValidatingService.Execute(ctx, order, req.ItemInfos)
 	if err != nil {
 		return &OrderUseCaseRes{req.OrderTime, req.OrderNumber, true}, nil
 	}
 
 	// 注文を作成
-	err = o.orderFactory.Execute(ctx, order, req.ItemsInfos)
+	err = o.orderFactory.Execute(ctx, order, req.ItemInfos)
 	if err != nil {
 		return &OrderUseCaseRes{req.OrderTime, req.OrderNumber, true}, nil
 	}
