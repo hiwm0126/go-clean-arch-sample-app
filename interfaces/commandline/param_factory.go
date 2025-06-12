@@ -2,21 +2,21 @@ package commandline
 
 import "errors"
 
-// Parser 全体調整の責任を持つインターフェース
-type Parser interface {
-	Execute(rawArgs [][]string) ([]interface{}, error)
+// ParamFactory 全体調整の責任を持つインターフェース
+type ParamFactory interface {
+	Create(rawArgs [][]string) ([]interface{}, error)
 }
 
-// commandParser 全体調整の実装
-type commandParser struct {
+// paramFactoryImpl 全体調整の実装
+type paramFactoryImpl struct {
 	argumentSeparator ArgumentSeparator
 	dataConverter     DataConverter
 	parsers           []CommandArgumentParser
 }
 
-// NewParser コマンドパーサーのコンストラクタ
-func NewParser() Parser {
-	parser := &commandParser{
+// NewParamFactory コマンドパーサーのコンストラクタ
+func NewParamFactory() ParamFactory {
+	parser := &paramFactoryImpl{
 		argumentSeparator: NewArgumentSeparator(),
 		dataConverter:     NewDataConverter(),
 		parsers:           make([]CommandArgumentParser, 0),
@@ -34,12 +34,12 @@ func NewParser() Parser {
 }
 
 // RegisterHandler パーサーを登録
-func (p *commandParser) registerParser(handler CommandArgumentParser) {
+func (p *paramFactoryImpl) registerParser(handler CommandArgumentParser) {
 	p.parsers = append(p.parsers, handler)
 }
 
 // Parse 引数をパースしてリクエストパラメータリストを返す
-func (p *commandParser) Execute(rawArgs [][]string) ([]interface{}, error) {
+func (p *paramFactoryImpl) Create(rawArgs [][]string) ([]interface{}, error) {
 	// 1. 引数をコマンド別に分離
 	separatedCommands, err := p.argumentSeparator.Separate(rawArgs)
 	if err != nil {
@@ -60,7 +60,7 @@ func (p *commandParser) Execute(rawArgs [][]string) ([]interface{}, error) {
 }
 
 // parseArgument 個別のコマンドをパース
-func (p *commandParser) parseArgument(separatedArgument SeparatedArgument) (interface{}, error) {
+func (p *paramFactoryImpl) parseArgument(separatedArgument SeparatedArgument) (interface{}, error) {
 	// 適切なハンドラーを見つける
 	for _, parser := range p.parsers {
 		if parser.CanHandle(separatedArgument.CommandName) {

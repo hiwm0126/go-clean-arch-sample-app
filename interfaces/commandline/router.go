@@ -18,14 +18,14 @@ func NewRouter(con *Controller, sysOutGenerator *SysOutGenerator) Router {
 
 func (r *router) Routing(args [][]string) error {
 	// リクエストパラメーターを解析
-	parser := NewParser()
-	reqParamList, err := parser.Execute(args)
+	paramFactory := NewParamFactory()
+	paramList, err := paramFactory.Create(args)
 	if err != nil {
 		return err
 	}
 
 	// リクエストパラメーターに応じた処理を実行
-	for _, reqParam := range reqParamList {
+	for _, reqParam := range paramList {
 		switch param := reqParam.(type) {
 		case *usecase.DataInitializationUseCaseReq:
 			err := r.controller.InitData(param)
