@@ -19,7 +19,7 @@ func NewRouter(con *Controller, sysOutGenerator *SysOutGenerator) Router {
 func (r *router) Routing(args [][]string) error {
 	// リクエストパラメーターを解析
 	parser := NewParser()
-	reqParamList, err := parser.Parse(args)
+	reqParamList, err := parser.Execute(args)
 	if err != nil {
 		return err
 	}
