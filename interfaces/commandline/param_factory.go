@@ -2,12 +2,12 @@ package commandline
 
 import "errors"
 
-// ParamFactory 全体調整の責任を持つインターフェース
+// ParamFactory は、コマンドライン引数を解析してリクエストパラメータを生成する責任を持つインターフェース
 type ParamFactory interface {
 	Create(rawArgs [][]string) ([]interface{}, error)
 }
 
-// paramFactoryImpl 全体調整の実装
+// paramFactoryImpl は ParamFactory インターフェースの実装
 type paramFactoryImpl struct {
 	argumentSeparator ArgumentSeparator
 	dataConverter     DataConverter
@@ -16,21 +16,21 @@ type paramFactoryImpl struct {
 
 // NewParamFactory コマンドパーサーのコンストラクタ
 func NewParamFactory() ParamFactory {
-	parser := &paramFactoryImpl{
+	factory := &paramFactoryImpl{
 		argumentSeparator: NewArgumentSeparator(),
 		dataConverter:     NewDataConverter(),
 		parsers:           make([]CommandArgumentParser, 0),
 	}
 
 	// デフォルトハンドラーを登録
-	parser.registerParser(NewOrderArgumentParser())
-	parser.registerParser(NewCancelArgumentParser())
-	parser.registerParser(NewShipArgumentParser())
-	parser.registerParser(NewChangeArgumentParser())
-	parser.registerParser(NewExpandArgumentParser())
-	parser.registerParser(NewInitDataArgumentParser())
+	factory.registerParser(NewOrderArgumentParser())
+	factory.registerParser(NewCancelArgumentParser())
+	factory.registerParser(NewShipArgumentParser())
+	factory.registerParser(NewChangeArgumentParser())
+	factory.registerParser(NewExpandArgumentParser())
+	factory.registerParser(NewInitDataArgumentParser())
 
-	return parser
+	return factory
 }
 
 // RegisterHandler パーサーを登録
