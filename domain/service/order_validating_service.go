@@ -54,7 +54,8 @@ func (s *orderValidatingService) Execute(ctx context.Context, order *model.Order
 	if err != nil {
 		return err
 	}
-	shipmentLimit.AdditionalShipmentLimits = asl
+	// 出荷制限数に追加出荷可能数を設定
+	shipmentLimit.SetAdditionalShipmentLimits(asl)
 
 	//出荷制限数チェック
 	for productNumber, additionalQuantity := range itemInfos {
