@@ -2,5 +2,5 @@ package handler
 
 type Handler interface {
 	CanHandle(interface{}) bool
-	Handle(interface{}) error
+	Handle(ctx context.Context, param interface{}) error
 }

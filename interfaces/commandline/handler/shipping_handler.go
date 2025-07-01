@@ -25,14 +25,14 @@ func (h *shippingHandler) CanHandle(param interface{}) bool {
 	return ok
 }
 
-func (h *shippingHandler) Handle(param interface{}) error {
+func (h *shippingHandler) Handle(ctx context.Context, param interface{}) error {
 	req, ok := param.(*usecase.ShippingUseCaseReq)
 	if !ok {
 		return errors.New("invalid parameter type for ShippingUseCaseReq")
 	}
 
 	// 配送処理を実行
-	res, err := h.shippingUseCase.Ship(context.Background(), req)
+	res, err := h.shippingUseCase.Ship(ctx, req)
 	if err != nil {
 		return err
 	}

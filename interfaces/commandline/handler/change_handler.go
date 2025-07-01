@@ -23,14 +23,14 @@ func (h *changeHandler) CanHandle(param interface{}) bool {
 	return ok
 }
 
-func (h *changeHandler) Handle(param interface{}) error {
+func (h *changeHandler) Handle(ctx context.Context, param interface{}) error {
 	req, ok := param.(*usecase.ChangeUseCaseReq)
 	if !ok {
 		return errors.New("invalid parameter type for ChangeUseCaseReq")
 	}
 
 	// 変更処理を実行
-	res, err := h.changeUseCase.Change(context.Background(), req)
+	res, err := h.changeUseCase.Change(ctx, req)
 	if err != nil {
 		return err
 	}

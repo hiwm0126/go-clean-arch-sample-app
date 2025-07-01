@@ -23,14 +23,14 @@ func (h *cancelHandler) CanHandle(param interface{}) bool {
 	return ok
 }
 
-func (h *cancelHandler) Handle(param interface{}) error {
+func (h *cancelHandler) Handle(ctx context.Context, param interface{}) error {
 	req, ok := param.(*usecase.CancelUseCaseReq)
 	if !ok {
 		return errors.New("invalid parameter type for CancelUseCaseReq")
 	}
 
 	// キャンセル処理を実行
-	res, err := h.cancelUseCase.Cancel(context.Background(), req)
+	res, err := h.cancelUseCase.Cancel(ctx, req)
 	if err != nil {
 		return err
 	}

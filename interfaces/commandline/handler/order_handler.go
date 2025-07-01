@@ -23,14 +23,14 @@ func (h *orderHandler) CanHandle(param interface{}) bool {
 	return ok
 }
 
-func (h *orderHandler) Handle(param interface{}) error {
+func (h *orderHandler) Handle(ctx context.Context, param interface{}) error {
 	req, ok := param.(*usecase.OrderUseCaseReq)
 	if !ok {
 		return errors.New("invalid parameter type for OrderUseCaseReq")
 	}
 
 	// 注文処理を実行
-	res, err := h.orderUseCase.Order(context.Background(), req)
+	res, err := h.orderUseCase.Order(ctx, req)
 	if err != nil {
 		return err
 	}

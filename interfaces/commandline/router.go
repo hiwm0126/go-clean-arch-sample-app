@@ -1,6 +1,7 @@
 package commandline
 
 import (
+	"context"
 	"theapp/domain/service"
 	"theapp/infrastructure/datastore"
 	"theapp/interfaces/commandline/handler"
@@ -89,7 +90,7 @@ func (r *router) Routing(args [][]string) error {
 	for _, reqParam := range paramList {
 		for _, h := range r.handlers {
 			if h.CanHandle(reqParam) {
-				if err := h.Handle(reqParam); err != nil {
+				if err := h.Handle(context.Background(), reqParam); err != nil {
 					return err
 				}
 			}
