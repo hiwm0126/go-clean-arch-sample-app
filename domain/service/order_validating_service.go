@@ -13,22 +13,19 @@ type OrderValidatingService interface {
 
 type orderValidatingService struct {
 	orderItemRepo                repository.OrderItemRepository
-	shipmentLimitRepo            repository.ShipmentLimitRepository
+	shipmentLimitFactory         ShipmentLimitFactory
 	shippingAcceptablePeriodRepo repository.ShippingAcceptablePeriodRepository
-	additionalShipmentLimitRepo  repository.AdditionalShipmentLimitRepository
 }
 
 func NewOrderValidatingService(
 	orderItemRepo repository.OrderItemRepository,
-	shipmentLimitRepo repository.ShipmentLimitRepository,
+	shipmentLimitFactory ShipmentLimitFactory,
 	shippingAcceptablePeriodRepo repository.ShippingAcceptablePeriodRepository,
-	additionalShipmentLimitRepo repository.AdditionalShipmentLimitRepository,
 ) OrderValidatingService {
 	return &orderValidatingService{
 		orderItemRepo:                orderItemRepo,
-		shipmentLimitRepo:            shipmentLimitRepo,
+		shipmentLimitFactory:         shipmentLimitFactory,
 		shippingAcceptablePeriodRepo: shippingAcceptablePeriodRepo,
-		additionalShipmentLimitRepo:  additionalShipmentLimitRepo,
 	}
 }
 
@@ -44,18 +41,11 @@ func (s *orderValidatingService) Execute(ctx context.Context, order *model.Order
 		return err
 	}
 
-	// 出荷可能数取得
-	shipmentLimit, err := s.shipmentLimitRepo.GetShipmentLimitByDate(ctx, order.ShipmentDueDate)
+	// 指定された日の出荷制限情報を取得
+	shipmentLimit, err := s.shipmentLimitFactory.Create(ctx, order.ShipmentDueDate)
 	if err != nil {
 		return err
 	}
-	// ShipmentDueDateが含まれる期間で有効な、追加出荷可能数を取得
-	asl, err := s.additionalShipmentLimitRepo.GetByShipmentDueDate(ctx, order.ShipmentDueDate)
-	if err != nil {
-		return err
-	}
-	// 出荷制限数に追加出荷可能数を設定
-	shipmentLimit.SetAdditionalShipmentLimits(asl)
 
 	//出荷制限数チェック
 	for productNumber, additionalQuantity := range itemInfos {
@@ -65,9 +55,9 @@ func (s *orderValidatingService) Execute(ctx context.Context, order *model.Order
 			return err
 		}
 
-		// 指定された日付の出荷制限数を取得
-		limitQuantity := shipmentLimit.GetShipmentLimitQuantityByDate(order.ShipmentDueDate)
-		// (指定された日付の出荷可能数 - 現在の出荷予定数) < 今回の注文で追加される出荷数
+		// 出荷上限数を取得
+		limitQuantity := shipmentLimit.GetShipmentLimitQuantity()
+		// (出荷上限数 - 現在の出荷予定数) < 今回の注文で追加される出荷数
 		if (limitQuantity - currentPlannedShippingQuantity) < additionalQuantity {
 			return errors.New("available quantity is not enough")
 		}

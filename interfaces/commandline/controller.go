@@ -23,11 +23,11 @@ func NewController() *Controller {
 	shipmentLimitRepo := datastore.NewShipmentLimitRepository()
 	shippingAcceptablePeriodRepo := datastore.NewShippingAcceptablePeriodRepository()
 	additionalShipmentLimitRepo := datastore.NewAdditionalShipmentLimitRepository()
+	shipmentLimitFactory := service.NewShipmentLimitFactory(shipmentLimitRepo, additionalShipmentLimitRepo)
 	orderValidationgService := service.NewOrderValidatingService(
 		orderItemRepo,
-		shipmentLimitRepo,
+		shipmentLimitFactory,
 		shippingAcceptablePeriodRepo,
-		additionalShipmentLimitRepo,
 	)
 	orderFactory := service.NewOrderFactory(
 		orderRepo,

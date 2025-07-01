@@ -1,10 +1,5 @@
 package model
 
-import (
-	"theapp/constants"
-	"time"
-)
-
 type ShipmentLimit struct {
 	DayOfWeek                DayOfWeek
 	Quantity                 int
@@ -30,24 +25,14 @@ func NewShipmentLimit(dayOfWeek DayOfWeek, quantity int) *ShipmentLimit {
 	}
 }
 
-// GetShipmentLimitQuantityByDate 指定された出荷予定日の、出荷制限数を取得する
-// shippingDueDate: 出荷予定日
-// 出荷予定日が出荷制限数の追加期間内であれば、出荷制限の数量を加算する
-func (s *ShipmentLimit) GetShipmentLimitQuantityByDate(shippingDueDate string) int {
+// GetShipmentLimitQuantity 出荷制限数を取得する
+func (s *ShipmentLimit) GetShipmentLimitQuantity() int {
 	// 初期の出荷制限数を設定
 	limitQuantity := s.Quantity
 
-	// 出荷予定日をパース
-	shippingDueDateTime, err := time.Parse(constants.DateFormat, shippingDueDate)
-	if err != nil {
-		return 0
-	}
-
-	// 出荷制限数を追加する条件を判定
+	// 出荷制限数を追加する
 	for _, additionalLimit := range s.AdditionalShipmentLimits {
-		if isWithinRange(additionalLimit, shippingDueDateTime) {
-			limitQuantity += additionalLimit.Quantity
-		}
+		limitQuantity += additionalLimit.Quantity
 	}
 
 	return limitQuantity
@@ -55,11 +40,4 @@ func (s *ShipmentLimit) GetShipmentLimitQuantityByDate(shippingDueDate string) i
 
 func (s *ShipmentLimit) SetAdditionalShipmentLimits(additionalLimits []*AdditionalShipmentLimit) {
 	s.AdditionalShipmentLimits = additionalLimits
-}
-
-// isWithinRange 出荷予定日が追加制限の期間内かを判定する
-func isWithinRange(limit *AdditionalShipmentLimit, date time.Time) bool {
-	return (limit.From.Before(date) && limit.To.After(date)) || // // From,Toの期間内
-		limit.From.Equal(date) || // Fromが一致
-		limit.To.Equal(date) // Toが一致
 }
