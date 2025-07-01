@@ -6,26 +6,26 @@ import (
 	"theapp/domain/repository"
 )
 
-type ShipmentLimitFactory interface {
-	Create(ctx context.Context, shipmentDueDate string) (*model.ShipmentLimit, error)
+type ShipmentLimitProvider interface {
+	Provide(ctx context.Context, shipmentDueDate string) (*model.ShipmentLimit, error)
 }
 
-type shipmentLimitFactory struct {
+type shipmentLimitProvider struct {
 	shipmentLimitRepo           repository.ShipmentLimitRepository
 	additionalShipmentLimitRepo repository.AdditionalShipmentLimitRepository
 }
 
-func NewShipmentLimitFactory(
+func NewShipmentLimitProvider(
 	shipmentLimitRepo repository.ShipmentLimitRepository,
 	additionalShipmentLimitRepo repository.AdditionalShipmentLimitRepository,
-) ShipmentLimitFactory {
-	return &shipmentLimitFactory{
+) ShipmentLimitProvider {
+	return &shipmentLimitProvider{
 		shipmentLimitRepo:           shipmentLimitRepo,
 		additionalShipmentLimitRepo: additionalShipmentLimitRepo,
 	}
 }
 
-func (f *shipmentLimitFactory) Create(ctx context.Context, shipmentDueDate string) (*model.ShipmentLimit, error) {
+func (f *shipmentLimitProvider) Provide(ctx context.Context, shipmentDueDate string) (*model.ShipmentLimit, error) {
 	// 出荷可能数取得
 	shipmentLimit, err := f.shipmentLimitRepo.GetShipmentLimitByDate(ctx, shipmentDueDate)
 	if err != nil {

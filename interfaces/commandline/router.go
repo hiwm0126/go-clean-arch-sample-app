@@ -25,10 +25,10 @@ func NewRouter() Router {
 	shipmentLimitRepo := datastore.NewShipmentLimitRepository()
 	shippingAcceptablePeriodRepo := datastore.NewShippingAcceptablePeriodRepository()
 	additionalShipmentLimitRepo := datastore.NewAdditionalShipmentLimitRepository()
-	shipmentLimitFactory := service.NewShipmentLimitFactory(shipmentLimitRepo, additionalShipmentLimitRepo)
+	shipmentLimitProvider := service.NewShipmentLimitProvider(shipmentLimitRepo, additionalShipmentLimitRepo)
 	orderValidationService := service.NewOrderValidatingService(
 		orderItemRepo,
-		shipmentLimitFactory,
+		shipmentLimitProvider,
 		shippingAcceptablePeriodRepo,
 	)
 	orderFactory := service.NewOrderFactory(

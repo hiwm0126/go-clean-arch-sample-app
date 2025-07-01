@@ -13,18 +13,18 @@ type OrderValidatingService interface {
 
 type orderValidatingService struct {
 	orderItemRepo                repository.OrderItemRepository
-	shipmentLimitFactory         ShipmentLimitFactory
+	shipmentLimitProvider        ShipmentLimitProvider
 	shippingAcceptablePeriodRepo repository.ShippingAcceptablePeriodRepository
 }
 
 func NewOrderValidatingService(
 	orderItemRepo repository.OrderItemRepository,
-	shipmentLimitFactory ShipmentLimitFactory,
+	shipmentLimitProvider ShipmentLimitProvider,
 	shippingAcceptablePeriodRepo repository.ShippingAcceptablePeriodRepository,
 ) OrderValidatingService {
 	return &orderValidatingService{
 		orderItemRepo:                orderItemRepo,
-		shipmentLimitFactory:         shipmentLimitFactory,
+		shipmentLimitProvider:        shipmentLimitProvider,
 		shippingAcceptablePeriodRepo: shippingAcceptablePeriodRepo,
 	}
 }
@@ -42,7 +42,7 @@ func (s *orderValidatingService) Execute(ctx context.Context, order *model.Order
 	}
 
 	// 指定された日の出荷制限情報を取得
-	shipmentLimit, err := s.shipmentLimitFactory.Create(ctx, order.ShipmentDueDate)
+	shipmentLimit, err := s.shipmentLimitProvider.Provide(ctx, order.ShipmentDueDate)
 	if err != nil {
 		return err
 	}
