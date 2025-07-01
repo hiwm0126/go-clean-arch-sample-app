@@ -21,7 +21,7 @@ func (h *initDataHandler) CanHandle(param interface{}) bool {
 	return ok
 }
 
-func (h *initDataHandler) Handler(param interface{}) error {
+func (h *initDataHandler) Handle(param interface{}) error {
 	req, ok := param.(*usecase.DataInitializationUseCaseReq)
 	if !ok {
 		return errors.New("invalid parameter type for DataInitializationUseCaseReq")

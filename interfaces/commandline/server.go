@@ -10,7 +10,7 @@ type server struct {
 
 func NewServer() Server {
 	return &server{
-		router: NewRouter(NewController(), NewSysOutGenerator()),
+		router: NewRouter(),
 	}
 }
 

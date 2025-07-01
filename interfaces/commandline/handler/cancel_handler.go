@@ -3,6 +3,8 @@ package handler
 import (
 	"context"
 	"errors"
+	"fmt"
+	"theapp/constants"
 	"theapp/usecase"
 )
 
@@ -21,17 +23,20 @@ func (h *cancelHandler) CanHandle(param interface{}) bool {
 	return ok
 }
 
-func (h *cancelHandler) Handler(param interface{}) error {
+func (h *cancelHandler) Handle(param interface{}) error {
 	req, ok := param.(*usecase.CancelUseCaseReq)
 	if !ok {
 		return errors.New("invalid parameter type for CancelUseCaseReq")
 	}
 
 	// キャンセル処理を実行
-	_, err := h.cancelUseCase.Cancel(context.Background(), req)
+	res, err := h.cancelUseCase.Cancel(context.Background(), req)
 	if err != nil {
 		return err
 	}
+
+	// 標準出力の生成
+	fmt.Printf("%s Canceled %s\n", res.CancelTime.Format(constants.DateTimeFormat), res.OrderNumber)
 
 	return nil
 }

@@ -1,19 +1,80 @@
 package commandline
 
-import "theapp/usecase"
+import (
+	"theapp/domain/service"
+	"theapp/infrastructure/datastore"
+	"theapp/interfaces/commandline/handler"
+	"theapp/usecase"
+)
 
 type Router interface {
 	Routing(args [][]string) error
 }
 type router struct {
-	controller      *Controller
-	sysOutGenerator *SysOutGenerator
+	handlers []handler.Handler
 }
 
-func NewRouter(con *Controller, sysOutGenerator *SysOutGenerator) Router {
-	return &router{
-		controller: con,
+func NewRouter() Router {
+	router := &router{
+		handlers: make([]handler.Handler, 0),
 	}
+	orderRepo := datastore.NewOrderRepository()
+	orderItemRepo := datastore.NewOrderItemRepository()
+	productRepo := datastore.NewProductRepository()
+	shipmentLimitRepo := datastore.NewShipmentLimitRepository()
+	shippingAcceptablePeriodRepo := datastore.NewShippingAcceptablePeriodRepository()
+	additionalShipmentLimitRepo := datastore.NewAdditionalShipmentLimitRepository()
+	shipmentLimitFactory := service.NewShipmentLimitFactory(shipmentLimitRepo, additionalShipmentLimitRepo)
+	orderValidationService := service.NewOrderValidatingService(
+		orderItemRepo,
+		shipmentLimitFactory,
+		shippingAcceptablePeriodRepo,
+	)
+	orderFactory := service.NewOrderFactory(
+		orderRepo,
+		orderItemRepo,
+		productRepo,
+		shipmentLimitRepo,
+		shippingAcceptablePeriodRepo,
+		additionalShipmentLimitRepo,
+	)
+	orderCancelService := service.NewOrderCancelService(orderRepo, orderItemRepo)
+	initDataUseCase := usecase.NewImportDataUseCase(
+		productRepo,
+		shipmentLimitRepo,
+		shippingAcceptablePeriodRepo,
+	)
+	orderUseCase := usecase.NewOrderUseCase(
+		orderFactory,
+		orderValidationService,
+	)
+	cancelUseCase := usecase.NewCancelUseCase(
+		orderRepo,
+		orderCancelService,
+	)
+	shipUseCase := usecase.NewShippingUseCase(
+		orderRepo,
+	)
+	changeUseCase := usecase.NewChangeUseCase(
+		orderRepo,
+		orderItemRepo,
+		orderFactory,
+		orderCancelService,
+		orderValidationService,
+	)
+	expandUseCase := usecase.NewExpandUseCase(
+		additionalShipmentLimitRepo,
+	)
+
+	// ハンドラーの登録
+	router.registerHandler(handler.NewInitDataHandler(initDataUseCase))
+	router.registerHandler(handler.NewOrderHandler(orderUseCase))
+	router.registerHandler(handler.NewCancelHandler(cancelUseCase))
+	router.registerHandler(handler.NewShippingHandler(shipUseCase))
+	router.registerHandler(handler.NewChangeHandler(changeUseCase))
+	router.registerHandler(handler.NewExpandHandler(expandUseCase))
+
+	return router
 }
 
 func (r *router) Routing(args [][]string) error {
@@ -24,45 +85,19 @@ func (r *router) Routing(args [][]string) error {
 		return err
 	}
 
-	// リクエストパラメーターに応じた処理を実行
+	// 各リクエストパラメーターに対してハンドラーを適用
 	for _, reqParam := range paramList {
-		switch param := reqParam.(type) {
-		case *usecase.DataInitializationUseCaseReq:
-			err := r.controller.InitData(param)
-			if err != nil {
-				return err
+		for _, h := range r.handlers {
+			if h.CanHandle(reqParam) {
+				if err := h.Handle(reqParam); err != nil {
+					return err
+				}
 			}
-		case *usecase.OrderUseCaseReq:
-			res, err := r.controller.Order(param)
-			if err != nil {
-				return err
-			}
-			r.sysOutGenerator.Generate(res)
-		case *usecase.CancelUseCaseReq:
-			res, err := r.controller.Cancel(param)
-			if err != nil {
-				return err
-			}
-			r.sysOutGenerator.Generate(res)
-		case *usecase.ShippingUseCaseReq:
-			res, err := r.controller.Ship(param)
-			if err != nil {
-				return err
-			}
-			r.sysOutGenerator.Generate(res)
-		case *usecase.ChangeUseCaseReq:
-			res, err := r.controller.Change(param)
-			if err != nil {
-				return err
-			}
-			r.sysOutGenerator.Generate(res)
-		case *usecase.ExpandUseCaseReq:
-			res, err := r.controller.Expand(param)
-			if err != nil {
-				return err
-			}
-			r.sysOutGenerator.Generate(res)
 		}
 	}
 	return nil
+}
+
+func (r *router) registerHandler(h handler.Handler) {
+	r.handlers = append(r.handlers, h)
 }

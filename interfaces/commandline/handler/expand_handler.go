@@ -3,6 +3,8 @@ package handler
 import (
 	"context"
 	"errors"
+	"fmt"
+	"theapp/constants"
 	"theapp/usecase"
 )
 
@@ -21,17 +23,20 @@ func (h *expandHandler) CanHandle(param interface{}) bool {
 	return ok
 }
 
-func (h *expandHandler) Handler(param interface{}) error {
+func (h *expandHandler) Handle(param interface{}) error {
 	req, ok := param.(*usecase.ExpandUseCaseReq)
 	if !ok {
 		return errors.New("invalid parameter type for ExpandUseCaseReq")
 	}
 
 	// 拡張処理を実行
-	_, err := h.expandUseCase.Expand(context.Background(), req)
+	res, err := h.expandUseCase.Expand(context.Background(), req)
 	if err != nil {
 		return err
 	}
+
+	// 標準出力の生成
+	fmt.Printf("%s Expanded\n", res.ExpandRequestTime.Format(constants.DateTimeFormat))
 
 	return nil
 }

@@ -3,6 +3,8 @@ package handler
 import (
 	"context"
 	"errors"
+	"fmt"
+	"theapp/constants"
 	"theapp/usecase"
 )
 
@@ -21,16 +23,23 @@ func (h *changeHandler) CanHandle(param interface{}) bool {
 	return ok
 }
 
-func (h *changeHandler) Handler(param interface{}) error {
+func (h *changeHandler) Handle(param interface{}) error {
 	req, ok := param.(*usecase.ChangeUseCaseReq)
 	if !ok {
 		return errors.New("invalid parameter type for ChangeUseCaseReq")
 	}
 
 	// 変更処理を実行
-	_, err := h.changeUseCase.Change(context.Background(), req)
+	res, err := h.changeUseCase.Change(context.Background(), req)
 	if err != nil {
 		return err
+	}
+
+	// 標準出力の生成
+	if res.IsError {
+		fmt.Printf("%s Changed %s Error: the number of available shipments has been exceeded.\n", res.RequestTime.Format(constants.DateTimeFormat), res.OrderNumber)
+	} else {
+		fmt.Printf("%s Changed %s\n", res.RequestTime.Format(constants.DateTimeFormat), res.OrderNumber)
 	}
 
 	return nil

@@ -3,6 +3,8 @@ package handler
 import (
 	"context"
 	"errors"
+	"fmt"
+	"theapp/constants"
 	"theapp/usecase"
 )
 
@@ -21,16 +23,23 @@ func (h *orderHandler) CanHandle(param interface{}) bool {
 	return ok
 }
 
-func (h *orderHandler) Handler(param interface{}) error {
+func (h *orderHandler) Handle(param interface{}) error {
 	req, ok := param.(*usecase.OrderUseCaseReq)
 	if !ok {
 		return errors.New("invalid parameter type for OrderUseCaseReq")
 	}
 
 	// 注文処理を実行
-	_, err := h.orderUseCase.Order(context.Background(), req)
+	res, err := h.orderUseCase.Order(context.Background(), req)
 	if err != nil {
 		return err
+	}
+
+	// 標準出力の生成
+	if res.IsError {
+		fmt.Printf("%s Ordered %s Error: the number of available shipments has been exceeded.\n", res.OrderTime.Format(constants.DateTimeFormat), res.OrderNumber)
+	} else {
+		fmt.Printf("%s Ordered %s\n", res.OrderTime.Format(constants.DateTimeFormat), res.OrderNumber)
 	}
 
 	return nil
