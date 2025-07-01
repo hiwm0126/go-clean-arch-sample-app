@@ -34,7 +34,9 @@ func NewArgumentSeparator() ArgumentSeparator {
 func (p *argumentSeparator) Separate(rawArgs [][]string) ([]SeparatedArgument, error) {
 	var separatedCommands []SeparatedArgument
 	var currentArgs [][]string
-	var currentCommandName = "INIT_DATA" // デフォルトコマンド
+	// 一個目のコマンド名が渡ってくるまでの値は、システム全体で利用される初期化用データ
+	// そのため、最初のコマンド名はINIT_DATAで固定される
+	var currentCommandName = "INIT_DATA"
 
 	for _, arg := range rawArgs {
 		if len(arg) == 0 {
