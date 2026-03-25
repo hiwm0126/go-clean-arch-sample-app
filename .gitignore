@@ -1,2 +1,4 @@
 .idea/
 .vscode/
+
+integration_test/test_data/

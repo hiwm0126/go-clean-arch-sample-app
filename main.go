@@ -10,6 +10,13 @@ import (
 )
 
 func main() {
+	// panic recovery
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Fprintf(os.Stderr, "Panic recovered: %v\n", r)
+		}
+	}()
+
 	scanner := bufio.NewScanner(os.Stdin)
 	var result [][]string
 
@@ -26,13 +33,6 @@ func main() {
 		fmt.Println("Error reading input:", err)
 		return
 	}
-
-	// panic recovery
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Fprintf(os.Stderr, "Panic recovered: %v\n", r)
-		}
-	}()
 
 	server := commandline.NewServer()
 	err := server.Run(result)

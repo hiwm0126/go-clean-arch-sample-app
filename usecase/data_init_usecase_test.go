@@ -12,7 +12,7 @@ import (
 func TestDataInitializationUseCase_InitData_productCountMismatch(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	u := NewImportDataUseCase(
+	u := NewDataInitializationUseCase(
 		datastore.NewProductRepository(),
 		datastore.NewShipmentLimitRepository(),
 		datastore.NewShippingAcceptablePeriodRepository(),

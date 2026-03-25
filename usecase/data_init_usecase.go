@@ -26,7 +26,7 @@ type dataInitializationUseCase struct {
 	shippingAcceptablePeriodRepo repository.ShippingAcceptablePeriodRepository
 }
 
-func NewImportDataUseCase(
+func NewDataInitializationUseCase(
 	productRepo repository.ProductRepository,
 	shipmentLimitRepo repository.ShipmentLimitRepository,
 	shippingAcceptablePeriodRepo repository.ShippingAcceptablePeriodRepository,
@@ -38,7 +38,7 @@ func NewImportDataUseCase(
 	}
 }
 
-// InitData 初期データをインポートする
+// InitData は初期設定に基づきマスタを登録する
 func (u *dataInitializationUseCase) InitData(ctx context.Context, req *DataInitializationUseCaseReq) error {
 	if req.NumOfProduct != len(req.ProductNumberList) {
 		return fmt.Errorf("product count mismatch: NumOfProduct=%d, len(ProductNumberList)=%d",

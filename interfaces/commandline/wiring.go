@@ -37,7 +37,7 @@ func newAppDeps() *appDeps {
 		additionalShipmentLimitRepo,
 	)
 	orderCancelService := service.NewOrderCancelService(orderRepo, orderItemRepo)
-	initDataUseCase := usecase.NewImportDataUseCase(
+	initDataUseCase := usecase.NewDataInitializationUseCase(
 		productRepo,
 		shipmentLimitRepo,
 		shippingAcceptablePeriodRepo,
