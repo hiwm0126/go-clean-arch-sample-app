@@ -3,12 +3,13 @@ package commandline
 import (
 	"errors"
 
+	"theapp/interfaces/commandline/cli"
 	"theapp/interfaces/commandline/parser"
 )
 
 // ParamFactory は、コマンドライン引数を解析してリクエストパラメータを生成する責任を持つインターフェース
 type ParamFactory interface {
-	Create(rawArgs [][]string) ([]ParsedCommand, error)
+	Create(rawArgs [][]string) ([]cli.ParsedCommand, error)
 }
 
 // paramFactoryImpl は ParamFactory インターフェースの実装
@@ -41,7 +42,7 @@ func (p *paramFactoryImpl) registerParser(h parser.CommandArgumentParser) {
 }
 
 // Create 引数をパースしてリクエストパラメータリストを返す
-func (p *paramFactoryImpl) Create(rawArgs [][]string) ([]ParsedCommand, error) {
+func (p *paramFactoryImpl) Create(rawArgs [][]string) ([]cli.ParsedCommand, error) {
 	// 1. 引数をコマンド別に分離
 	separatedCommands, err := p.argumentSeparator.Separate(rawArgs)
 	if err != nil {
@@ -49,7 +50,7 @@ func (p *paramFactoryImpl) Create(rawArgs [][]string) ([]ParsedCommand, error) {
 	}
 
 	// 2. 各コマンドをパースして型付きコマンド列にする
-	var out []ParsedCommand
+	var out []cli.ParsedCommand
 	for _, separatedCommand := range separatedCommands {
 		pc, err := p.parseArgument(separatedCommand)
 		if err != nil {
@@ -62,16 +63,16 @@ func (p *paramFactoryImpl) Create(rawArgs [][]string) ([]ParsedCommand, error) {
 }
 
 // parseArgument 個別のコマンドをパース
-func (p *paramFactoryImpl) parseArgument(separatedArgument SeparatedArgument) (ParsedCommand, error) {
+func (p *paramFactoryImpl) parseArgument(separatedArgument SeparatedArgument) (cli.ParsedCommand, error) {
 	for _, par := range p.parsers {
 		if par.CanHandle(separatedArgument.CommandName) {
 			raw, err := par.Parse(separatedArgument.Args)
 			if err != nil {
-				return ParsedCommand{}, err
+				return cli.ParsedCommand{}, err
 			}
-			return newParsedCommand(separatedArgument.CommandName, raw)
+			return cli.NewParsedCommand(separatedArgument.CommandName, raw)
 		}
 	}
 
-	return ParsedCommand{}, errors.New("no parser found for command: " + string(separatedArgument.CommandName))
+	return cli.ParsedCommand{}, errors.New("no parser found for command: " + string(separatedArgument.CommandName))
 }

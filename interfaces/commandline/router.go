@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"theapp/interfaces/commandline/cli"
 	"theapp/interfaces/commandline/internal/cmdname"
 )
 
@@ -18,7 +19,7 @@ type router struct {
 // NewRouter アプリケーションルーターを構築する
 func NewRouter() Router {
 	deps := newAppDeps()
-	return &router{dispatcher: deps.Dispatcher}
+	return &router{dispatcher: deps.dispatcher}
 }
 
 func (r *router) Routing(args [][]string) error {
@@ -41,7 +42,7 @@ func (r *router) Routing(args [][]string) error {
 }
 
 // validateInitDataQueryCount は先頭が INIT_DATA のとき、後続コマンド数が NumOfQuery と一致するか検証する
-func validateInitDataQueryCount(cmds []ParsedCommand) error {
+func validateInitDataQueryCount(cmds []cli.ParsedCommand) error {
 	if len(cmds) == 0 {
 		return nil
 	}
