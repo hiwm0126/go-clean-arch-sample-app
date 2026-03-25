@@ -2,103 +2,57 @@ package commandline
 
 import (
 	"context"
-	"theapp/domain/service"
-	"theapp/infrastructure/datastore"
-	"theapp/interfaces/commandline/handler"
-	"theapp/usecase"
+	"fmt"
+
+	"theapp/interfaces/commandline/internal/cmdname"
 )
 
 type Router interface {
 	Routing(args [][]string) error
 }
+
 type router struct {
-	commandHandlers []handler.CommandHandler
+	dispatcher *Dispatcher
 }
 
+// NewRouter アプリケーションルーターを構築する
 func NewRouter() Router {
-	router := &router{
-		commandHandlers: make([]handler.CommandHandler, 0),
-	}
-	orderRepo := datastore.NewOrderRepository()
-	orderItemRepo := datastore.NewOrderItemRepository()
-	productRepo := datastore.NewProductRepository()
-	shipmentLimitRepo := datastore.NewShipmentLimitRepository()
-	shippingAcceptablePeriodRepo := datastore.NewShippingAcceptablePeriodRepository()
-	additionalShipmentLimitRepo := datastore.NewAdditionalShipmentLimitRepository()
-	shipmentLimitProvider := service.NewShipmentLimitProvider(shipmentLimitRepo, additionalShipmentLimitRepo)
-	orderValidationService := service.NewOrderValidatingService(
-		orderItemRepo,
-		shipmentLimitProvider,
-		shippingAcceptablePeriodRepo,
-	)
-	orderFactory := service.NewOrderFactory(
-		orderRepo,
-		orderItemRepo,
-		productRepo,
-		shipmentLimitRepo,
-		shippingAcceptablePeriodRepo,
-		additionalShipmentLimitRepo,
-	)
-	orderCancelService := service.NewOrderCancelService(orderRepo, orderItemRepo)
-	initDataUseCase := usecase.NewImportDataUseCase(
-		productRepo,
-		shipmentLimitRepo,
-		shippingAcceptablePeriodRepo,
-	)
-	orderUseCase := usecase.NewOrderUseCase(
-		orderFactory,
-		orderValidationService,
-	)
-	cancelUseCase := usecase.NewCancelUseCase(
-		orderRepo,
-		orderCancelService,
-	)
-	shipUseCase := usecase.NewShippingUseCase(
-		orderRepo,
-	)
-	changeUseCase := usecase.NewChangeUseCase(
-		orderRepo,
-		orderItemRepo,
-		orderFactory,
-		orderCancelService,
-		orderValidationService,
-	)
-	expandUseCase := usecase.NewExpandUseCase(
-		additionalShipmentLimitRepo,
-	)
-
-	// コマンドハンドラーの登録
-	router.registerCommandHandler(handler.NewInitDataCommandHandler(initDataUseCase))
-	router.registerCommandHandler(handler.NewOrderCommandHandler(orderUseCase))
-	router.registerCommandHandler(handler.NewCancelCommandHandler(cancelUseCase))
-	router.registerCommandHandler(handler.NewShippingCommandHandler(shipUseCase))
-	router.registerCommandHandler(handler.NewChangeCommandHandler(changeUseCase))
-	router.registerCommandHandler(handler.NewExpandCommandHandler(expandUseCase))
-
-	return router
+	deps := newAppDeps()
+	return &router{dispatcher: deps.Dispatcher}
 }
 
 func (r *router) Routing(args [][]string) error {
-	// リクエストパラメーターを解析
 	paramFactory := NewParamFactory()
-	paramList, err := paramFactory.Create(args)
+	cmds, err := paramFactory.Create(args)
 	if err != nil {
 		return err
 	}
 
-	// 各リクエストパラメーターに対してコマンドハンドラーを適用
-	for _, reqParam := range paramList {
-		for _, h := range r.commandHandlers {
-			if h.CanHandle(reqParam) {
-				if err := h.Handle(context.Background(), reqParam); err != nil {
-					return err
-				}
-			}
+	if err := validateInitDataQueryCount(cmds); err != nil {
+		return err
+	}
+
+	for _, cmd := range cmds {
+		if err := r.dispatcher.Dispatch(context.Background(), cmd); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
-func (r *router) registerCommandHandler(h handler.CommandHandler) {
-	r.commandHandlers = append(r.commandHandlers, h)
+// validateInitDataQueryCount は先頭が INIT_DATA のとき、後続コマンド数が NumOfQuery と一致するか検証する
+func validateInitDataQueryCount(cmds []ParsedCommand) error {
+	if len(cmds) == 0 {
+		return nil
+	}
+	first := cmds[0]
+	if first.Kind != cmdname.CommandNameInitData || first.InitData == nil {
+		return nil
+	}
+	want := first.InitData.NumOfQuery
+	got := len(cmds) - 1
+	if got != want {
+		return fmt.Errorf("query count mismatch: INIT_DATA NumOfQuery=%d, got %d commands after init", want, got)
+	}
+	return nil
 }

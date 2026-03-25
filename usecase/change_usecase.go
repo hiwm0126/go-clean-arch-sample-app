@@ -54,7 +54,7 @@ func (c *changeUseCase) Change(ctx context.Context, req *ChangeUseCaseReq) (*Cha
 	// 対象の注文情報を取得
 	targetOrder, err := c.orderRepo.FindByOrderNumber(ctx, req.OrderNumber)
 	if err != nil {
-		return &ChangeUseCaseRes{targetOrder.OrderNumber, req.RequestTime, true}, nil
+		return nil, err
 	}
 
 	// 注文が存在しない場合

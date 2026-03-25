@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"theapp/domain/model"
 	"theapp/domain/repository"
 )
@@ -39,6 +40,11 @@ func NewImportDataUseCase(
 
 // InitData 初期データをインポートする
 func (u *dataInitializationUseCase) InitData(ctx context.Context, req *DataInitializationUseCaseReq) error {
+	if req.NumOfProduct != len(req.ProductNumberList) {
+		return fmt.Errorf("product count mismatch: NumOfProduct=%d, len(ProductNumberList)=%d",
+			req.NumOfProduct, len(req.ProductNumberList))
+	}
+
 	// 商品マスタを作成
 	for _, productNumber := range req.ProductNumberList {
 		product := model.NewProduct(productNumber)

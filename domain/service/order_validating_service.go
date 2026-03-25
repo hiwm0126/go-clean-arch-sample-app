@@ -38,7 +38,7 @@ func (s *orderValidatingService) Execute(ctx context.Context, order *model.Order
 
 	// 出荷可能期間チェック
 	if !sap.IsAcceptableDate(order.OrderTime, order.ShipmentDueDate) {
-		return err
+		return errors.New("shipment due date is outside acceptable period")
 	}
 
 	// 指定された日の出荷制限情報を取得
