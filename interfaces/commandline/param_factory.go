@@ -1,6 +1,10 @@
 package commandline
 
-import "errors"
+import (
+	"errors"
+
+	"theapp/interfaces/commandline/parser"
+)
 
 // ParamFactory は、コマンドライン引数を解析してリクエストパラメータを生成する責任を持つインターフェース
 type ParamFactory interface {
@@ -10,35 +14,33 @@ type ParamFactory interface {
 // paramFactoryImpl は ParamFactory インターフェースの実装
 type paramFactoryImpl struct {
 	argumentSeparator ArgumentSeparator
-	dataConverter     DataConverter
-	parsers           []CommandArgumentParser
+	parsers           []parser.CommandArgumentParser
 }
 
-// NewParamFactory コマンドパーサーのコンストラクタ
+// NewParamFactory ...
 func NewParamFactory() ParamFactory {
 	factory := &paramFactoryImpl{
 		argumentSeparator: NewArgumentSeparator(),
-		dataConverter:     NewDataConverter(),
-		parsers:           make([]CommandArgumentParser, 0),
+		parsers:           make([]parser.CommandArgumentParser, 0),
 	}
 
-	// デフォルトハンドラーを登録
-	factory.registerParser(NewOrderArgumentParser())
-	factory.registerParser(NewCancelArgumentParser())
-	factory.registerParser(NewShipArgumentParser())
-	factory.registerParser(NewChangeArgumentParser())
-	factory.registerParser(NewExpandArgumentParser())
-	factory.registerParser(NewInitDataArgumentParser())
+	// パーサーを登録
+	factory.registerParser(parser.NewOrderArgumentParser())
+	factory.registerParser(parser.NewCancelArgumentParser())
+	factory.registerParser(parser.NewShipArgumentParser())
+	factory.registerParser(parser.NewChangeArgumentParser())
+	factory.registerParser(parser.NewExpandArgumentParser())
+	factory.registerParser(parser.NewInitDataArgumentParser())
 
 	return factory
 }
 
-// RegisterHandler パーサーを登録
-func (p *paramFactoryImpl) registerParser(handler CommandArgumentParser) {
-	p.parsers = append(p.parsers, handler)
+// registerParser パーサーを登録
+func (p *paramFactoryImpl) registerParser(h parser.CommandArgumentParser) {
+	p.parsers = append(p.parsers, h)
 }
 
-// Parse 引数をパースしてリクエストパラメータリストを返す
+// Create 引数をパースしてリクエストパラメータリストを返す
 func (p *paramFactoryImpl) Create(rawArgs [][]string) ([]interface{}, error) {
 	// 1. 引数をコマンド別に分離
 	separatedCommands, err := p.argumentSeparator.Separate(rawArgs)
@@ -62,9 +64,9 @@ func (p *paramFactoryImpl) Create(rawArgs [][]string) ([]interface{}, error) {
 // parseArgument 個別のコマンドをパース
 func (p *paramFactoryImpl) parseArgument(separatedArgument SeparatedArgument) (interface{}, error) {
 	// 適切なハンドラーを見つける
-	for _, parser := range p.parsers {
-		if parser.CanHandle(separatedArgument.CommandName) {
-			return parser.Parse(separatedArgument.Args, p.dataConverter)
+	for _, par := range p.parsers {
+		if par.CanHandle(separatedArgument.CommandName) {
+			return par.Parse(separatedArgument.Args)
 		}
 	}
 

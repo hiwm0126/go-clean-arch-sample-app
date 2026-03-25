@@ -10,22 +10,22 @@ import (
 	"theapp/usecase"
 )
 
-type shippingHandler struct {
+type shippingCommandHandler struct {
 	shippingUseCase usecase.ShippingUseCase
 }
 
-func NewShippingHandler(shippingUseCase usecase.ShippingUseCase) Handler {
-	return &shippingHandler{
+func NewShippingCommandHandler(shippingUseCase usecase.ShippingUseCase) CommandHandler {
+	return &shippingCommandHandler{
 		shippingUseCase: shippingUseCase,
 	}
 }
 
-func (h *shippingHandler) CanHandle(param interface{}) bool {
+func (h *shippingCommandHandler) CanHandle(param interface{}) bool {
 	_, ok := param.(*usecase.ShippingUseCaseReq)
 	return ok
 }
 
-func (h *shippingHandler) Handle(ctx context.Context, param interface{}) error {
+func (h *shippingCommandHandler) Handle(ctx context.Context, param interface{}) error {
 	req, ok := param.(*usecase.ShippingUseCaseReq)
 	if !ok {
 		return errors.New("invalid parameter type for ShippingUseCaseReq")

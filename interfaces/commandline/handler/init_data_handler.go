@@ -6,22 +6,22 @@ import (
 	"theapp/usecase"
 )
 
-type initDataHandler struct {
+type initDataCommandHandler struct {
 	dataInitUseCase usecase.DataInitializationUseCase
 }
 
-func NewInitDataHandler(dataInitUseCase usecase.DataInitializationUseCase) Handler {
-	return &initDataHandler{
+func NewInitDataCommandHandler(dataInitUseCase usecase.DataInitializationUseCase) CommandHandler {
+	return &initDataCommandHandler{
 		dataInitUseCase: dataInitUseCase,
 	}
 }
 
-func (h *initDataHandler) CanHandle(param interface{}) bool {
+func (h *initDataCommandHandler) CanHandle(param interface{}) bool {
 	_, ok := param.(*usecase.DataInitializationUseCaseReq)
 	return ok
 }
 
-func (h *initDataHandler) Handle(ctx context.Context, param interface{}) error {
+func (h *initDataCommandHandler) Handle(ctx context.Context, param interface{}) error {
 	req, ok := param.(*usecase.DataInitializationUseCaseReq)
 	if !ok {
 		return errors.New("invalid parameter type for DataInitializationUseCaseReq")

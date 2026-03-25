@@ -8,22 +8,22 @@ import (
 	"theapp/usecase"
 )
 
-type cancelHandler struct {
+type cancelCommandHandler struct {
 	cancelUseCase usecase.CancelUseCase
 }
 
-func NewCancelHandler(cancelUseCase usecase.CancelUseCase) Handler {
-	return &cancelHandler{
+func NewCancelCommandHandler(cancelUseCase usecase.CancelUseCase) CommandHandler {
+	return &cancelCommandHandler{
 		cancelUseCase: cancelUseCase,
 	}
 }
 
-func (h *cancelHandler) CanHandle(param interface{}) bool {
+func (h *cancelCommandHandler) CanHandle(param interface{}) bool {
 	_, ok := param.(*usecase.CancelUseCaseReq)
 	return ok
 }
 
-func (h *cancelHandler) Handle(ctx context.Context, param interface{}) error {
+func (h *cancelCommandHandler) Handle(ctx context.Context, param interface{}) error {
 	req, ok := param.(*usecase.CancelUseCaseReq)
 	if !ok {
 		return errors.New("invalid parameter type for CancelUseCaseReq")

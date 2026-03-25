@@ -1,8 +1,10 @@
 package commandline
 
+import "theapp/interfaces/commandline/internal/cmdname"
+
 // SeparatedArgument 分離されたコマンド（ArgumentSeparatorの生成物）
 type SeparatedArgument struct {
-	CommandName CommandName
+	CommandName cmdname.CommandName
 	Args        [][]string
 }
 
@@ -13,19 +15,19 @@ type ArgumentSeparator interface {
 
 // argumentSeparator 引数分離の実装
 type argumentSeparator struct {
-	validCommands map[CommandName]bool
+	validCommands map[cmdname.CommandName]bool
 }
 
 // NewArgumentSeparator 引数分離器のコンストラクタ
 func NewArgumentSeparator() ArgumentSeparator {
 	return &argumentSeparator{
-		validCommands: map[CommandName]bool{
-			CommandNameOrder:    true,
-			CommandNameCancel:   true,
-			CommandNameShip:     true,
-			CommandNameChange:   true,
-			CommandNameExpand:   true,
-			CommandNameInitData: true,
+		validCommands: map[cmdname.CommandName]bool{
+			cmdname.CommandNameOrder:    true,
+			cmdname.CommandNameCancel:   true,
+			cmdname.CommandNameShip:     true,
+			cmdname.CommandNameChange:   true,
+			cmdname.CommandNameExpand:   true,
+			cmdname.CommandNameInitData: true,
 		},
 	}
 }
@@ -67,7 +69,7 @@ func (p *argumentSeparator) Separate(rawArgs [][]string) ([]SeparatedArgument, e
 
 // isValidCommand コマンド名が有効かチェック
 func (p *argumentSeparator) isValidCommand(commandName string) bool {
-	_, exists := p.validCommands[CommandName(commandName)]
+	_, exists := p.validCommands[cmdname.CommandName(commandName)]
 	return exists
 }
 
@@ -78,7 +80,7 @@ func (p *argumentSeparator) appendSeparatedCommand(separatedCommands *[]Separate
 	}
 
 	*separatedCommands = append(*separatedCommands, SeparatedArgument{
-		CommandName: CommandName(commandName),
+		CommandName: cmdname.CommandName(commandName),
 		Args:        args,
 	})
 

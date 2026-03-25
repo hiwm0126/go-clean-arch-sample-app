@@ -8,22 +8,22 @@ import (
 	"theapp/usecase"
 )
 
-type orderHandler struct {
+type orderCommandHandler struct {
 	orderUseCase usecase.OrderUseCase
 }
 
-func NewOrderHandler(orderUseCase usecase.OrderUseCase) Handler {
-	return &orderHandler{
+func NewOrderCommandHandler(orderUseCase usecase.OrderUseCase) CommandHandler {
+	return &orderCommandHandler{
 		orderUseCase: orderUseCase,
 	}
 }
 
-func (h *orderHandler) CanHandle(param interface{}) bool {
+func (h *orderCommandHandler) CanHandle(param interface{}) bool {
 	_, ok := param.(*usecase.OrderUseCaseReq)
 	return ok
 }
 
-func (h *orderHandler) Handle(ctx context.Context, param interface{}) error {
+func (h *orderCommandHandler) Handle(ctx context.Context, param interface{}) error {
 	req, ok := param.(*usecase.OrderUseCaseReq)
 	if !ok {
 		return errors.New("invalid parameter type for OrderUseCaseReq")

@@ -12,12 +12,12 @@ type Router interface {
 	Routing(args [][]string) error
 }
 type router struct {
-	handlers []handler.Handler
+	commandHandlers []handler.CommandHandler
 }
 
 func NewRouter() Router {
 	router := &router{
-		handlers: make([]handler.Handler, 0),
+		commandHandlers: make([]handler.CommandHandler, 0),
 	}
 	orderRepo := datastore.NewOrderRepository()
 	orderItemRepo := datastore.NewOrderItemRepository()
@@ -67,13 +67,13 @@ func NewRouter() Router {
 		additionalShipmentLimitRepo,
 	)
 
-	// ハンドラーの登録
-	router.registerHandler(handler.NewInitDataHandler(initDataUseCase))
-	router.registerHandler(handler.NewOrderHandler(orderUseCase))
-	router.registerHandler(handler.NewCancelHandler(cancelUseCase))
-	router.registerHandler(handler.NewShippingHandler(shipUseCase))
-	router.registerHandler(handler.NewChangeHandler(changeUseCase))
-	router.registerHandler(handler.NewExpandHandler(expandUseCase))
+	// コマンドハンドラーの登録
+	router.registerCommandHandler(handler.NewInitDataCommandHandler(initDataUseCase))
+	router.registerCommandHandler(handler.NewOrderCommandHandler(orderUseCase))
+	router.registerCommandHandler(handler.NewCancelCommandHandler(cancelUseCase))
+	router.registerCommandHandler(handler.NewShippingCommandHandler(shipUseCase))
+	router.registerCommandHandler(handler.NewChangeCommandHandler(changeUseCase))
+	router.registerCommandHandler(handler.NewExpandCommandHandler(expandUseCase))
 
 	return router
 }
@@ -86,9 +86,9 @@ func (r *router) Routing(args [][]string) error {
 		return err
 	}
 
-	// 各リクエストパラメーターに対してハンドラーを適用
+	// 各リクエストパラメーターに対してコマンドハンドラーを適用
 	for _, reqParam := range paramList {
-		for _, h := range r.handlers {
+		for _, h := range r.commandHandlers {
 			if h.CanHandle(reqParam) {
 				if err := h.Handle(context.Background(), reqParam); err != nil {
 					return err
@@ -99,6 +99,6 @@ func (r *router) Routing(args [][]string) error {
 	return nil
 }
 
-func (r *router) registerHandler(h handler.Handler) {
-	r.handlers = append(r.handlers, h)
+func (r *router) registerCommandHandler(h handler.CommandHandler) {
+	r.commandHandlers = append(r.commandHandlers, h)
 }

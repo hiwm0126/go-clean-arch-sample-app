@@ -8,22 +8,22 @@ import (
 	"theapp/usecase"
 )
 
-type changeHandler struct {
+type changeCommandHandler struct {
 	changeUseCase usecase.ChangeUseCase
 }
 
-func NewChangeHandler(changeUseCase usecase.ChangeUseCase) Handler {
-	return &changeHandler{
+func NewChangeCommandHandler(changeUseCase usecase.ChangeUseCase) CommandHandler {
+	return &changeCommandHandler{
 		changeUseCase: changeUseCase,
 	}
 }
 
-func (h *changeHandler) CanHandle(param interface{}) bool {
+func (h *changeCommandHandler) CanHandle(param interface{}) bool {
 	_, ok := param.(*usecase.ChangeUseCaseReq)
 	return ok
 }
 
-func (h *changeHandler) Handle(ctx context.Context, param interface{}) error {
+func (h *changeCommandHandler) Handle(ctx context.Context, param interface{}) error {
 	req, ok := param.(*usecase.ChangeUseCaseReq)
 	if !ok {
 		return errors.New("invalid parameter type for ChangeUseCaseReq")

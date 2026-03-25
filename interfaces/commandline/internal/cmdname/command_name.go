@@ -1,4 +1,4 @@
-package commandline
+package cmdname
 
 // CommandName コマンド名の型定義（型安全性向上のため）
 type CommandName string
@@ -38,4 +38,4 @@ func GetValidCommandNames() []CommandName {
 		CommandNameExpand,
 		CommandNameInitData,
 	}
-} 
+}

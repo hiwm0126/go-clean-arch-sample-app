@@ -8,22 +8,22 @@ import (
 	"theapp/usecase"
 )
 
-type expandHandler struct {
+type expandCommandHandler struct {
 	expandUseCase usecase.ExpandUseCase
 }
 
-func NewExpandHandler(expandUseCase usecase.ExpandUseCase) Handler {
-	return &expandHandler{
+func NewExpandCommandHandler(expandUseCase usecase.ExpandUseCase) CommandHandler {
+	return &expandCommandHandler{
 		expandUseCase: expandUseCase,
 	}
 }
 
-func (h *expandHandler) CanHandle(param interface{}) bool {
+func (h *expandCommandHandler) CanHandle(param interface{}) bool {
 	_, ok := param.(*usecase.ExpandUseCaseReq)
 	return ok
 }
 
-func (h *expandHandler) Handle(ctx context.Context, param interface{}) error {
+func (h *expandCommandHandler) Handle(ctx context.Context, param interface{}) error {
 	req, ok := param.(*usecase.ExpandUseCaseReq)
 	if !ok {
 		return errors.New("invalid parameter type for ExpandUseCaseReq")

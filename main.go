@@ -30,7 +30,7 @@ func main() {
 	// panic recovery
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println(os.Stderr, "Panic recovered: %v\n", r)
+			fmt.Fprintf(os.Stderr, "Panic recovered: %v\n", r)
 		}
 	}()
 
